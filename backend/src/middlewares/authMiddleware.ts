@@ -31,10 +31,12 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
         return res.status(401).json({ message: "Unauthorized" });
     }
     // add user to req object
-    // req.user = user;
+    req.user = user;
 
     next();
   } catch (error) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 };
+
+export default authMiddleware;

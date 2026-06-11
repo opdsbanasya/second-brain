@@ -1,8 +1,5 @@
 import mongoose from "mongoose";
-
-interface TagsTypes{
-    name: string;
-}
+import type { TagsTypes } from "../types/Tags.js";
 
 export const TagsSchema = new mongoose.Schema<TagsTypes>({
     name: {

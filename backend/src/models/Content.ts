@@ -1,12 +1,5 @@
 import mongoose from "mongoose";
-
-interface ContentTypes {
-  title: string;
-  link: string;
-  contentType: string;
-  tags?: string[];
-  userId: mongoose.Schema.Types.ObjectId;
-}
+import type { ContentTypes } from "../types/Content.js";
 
 const ContentSchema = new mongoose.Schema<ContentTypes>(
   {

@@ -1,10 +1,5 @@
 import mongoose from "mongoose";
-
-export interface UserTypes {
-  name: string;
-  email: string;
-  password: string;
-}
+import type { UserTypes } from "../types/User.js";
 
 const UserSchema = new mongoose.Schema<UserTypes>(
   {

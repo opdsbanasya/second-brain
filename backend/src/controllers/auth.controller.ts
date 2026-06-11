@@ -1,12 +1,12 @@
 import type { Request, Response } from "express";
-import type { UserTypes } from "../models/User.js";
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import type { UserInputLogin, UserInputRegister } from "../types/User.js";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    const userBody: UserTypes = req.body;
+    const userBody: UserInputRegister = req.body;
     console.log(userBody);
 
     const hashedPassword = await bcrypt.hash(userBody.password, 10);
@@ -22,7 +22,7 @@ export const registerUser = async (req: Request, res: Response) => {
 
 export const loginUser = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email, password }: UserInputLogin = req.body;
 
     // Find the user by email
     const user = await User.findOne({ email: email });

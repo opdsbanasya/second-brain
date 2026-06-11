@@ -10,14 +10,14 @@
 - **PUT** `/api/users/:id` - Update a specific user's information.
 - **DELETE** `/api/users/:id` - Delete a specific user (admin only).
 
-### Content APIs
+### Content APIs ✅
 - **GET** `/api/content` - Retrieve a list of all content items.
 - **GET** `/api/content/:id` - Retrieve a specific content item by ID.
 - **POST** `/api/content` - Create a new content item.
 - **PUT** `/api/content/:id` - Update a specific content item.
 - **DELETE** `/api/content/:id` - Delete a specific content item.
 
-### Tags APIs
+### Tags APIs ✅
 - **GET** `/api/tags` - Retrieve a list of all tags.
 
 ### Shared Links APIs

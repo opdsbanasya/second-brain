@@ -10,7 +10,6 @@ interface SharableLinkTypes {
 const SharableLinkSchema = new mongoose.Schema<SharableLinkTypes>({
     hash: {
         type: String,
-        required: true,
         unique: true
     },
     contentId: {
@@ -25,7 +24,6 @@ const SharableLinkSchema = new mongoose.Schema<SharableLinkTypes>({
     },
     expiresAt: {
         type: Date,
-        required: true
     }
 }, {
     timestamps: true
