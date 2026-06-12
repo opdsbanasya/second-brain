@@ -4,6 +4,7 @@ export interface ContentTypes {
   title: string;
   link: string;
   contentType: string;
+  description?: string;
   tags?: string[];
   userId: mongoose.Schema.Types.ObjectId;
   _id: mongoose.Schema.Types.ObjectId;

@@ -14,7 +14,9 @@ export const registerUser = async (req: Request, res: Response) => {
 
     const user = await User.create(userBody);
 
-    res.status(201).json({ message: "User created successfully", user });
+    const { password: _, ...userWithoutPassword } = user.toObject();
+
+    res.status(201).json({ message: "User created successfully", user: userWithoutPassword });
   } catch (error) {
     res.status(400).json({ message: "Bad Request" });
   }
@@ -54,9 +56,9 @@ export const loginUser = async (req: Request, res: Response) => {
       sameSite: "strict",
       maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
     });
-
+    const { password: _, ...userWithoutPassword } = user.toObject();
     // Send response with user data
-    res.status(200).json({ message: "Login successful", user });
+    res.status(200).json({ message: "Login successful", user: userWithoutPassword });
   } catch (error) {
     res.status(400).json({ message: "Bad Request" });
   }

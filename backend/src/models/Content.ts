@@ -14,7 +14,7 @@ const ContentSchema = new mongoose.Schema<ContentTypes>(
     },
     contentType: {
       type: String,
-      enum: ["Link", "Article", "Video", "Podcast", "Book", "Course", "Other"],
+      enum: ["link", "article", "video", "podcast", "book", "course", "other"],
       required: true,
     },
     tags: {
@@ -25,6 +25,9 @@ const ContentSchema = new mongoose.Schema<ContentTypes>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    description: {
+      type: String,
     },
   },
   {

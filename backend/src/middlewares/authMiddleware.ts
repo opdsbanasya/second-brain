@@ -8,7 +8,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
 
     // Check if the token exists
     if(!token) {
-        return res.status(401).json({ message: "Unauthorized" });
+        return res.status(401).json({ message: "Unauthorized!" });
     }
 
     const secretKey = process.env.JWT_SECRET;
@@ -24,7 +24,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
     if(!userId) {
         return res.status(401).json({ message: "Unauthorized" });
     }
-
+    
     // chack if user exist in database
     const user = await User.findById(userId);
     if(!user) {

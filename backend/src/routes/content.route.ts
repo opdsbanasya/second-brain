@@ -6,8 +6,8 @@ const contentRoute = express.Router();
 
 contentRoute.use(authMiddleware);
 
-contentRoute.get("/", getAllContents);
 contentRoute.post("/", createContent);
+contentRoute.get("/", getAllContents);
 contentRoute.get("/:id", getContentById);
 contentRoute.put("/:id", updateContentById);
 contentRoute.delete("/:id", deleteContentById);
