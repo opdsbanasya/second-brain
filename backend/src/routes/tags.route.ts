@@ -6,11 +6,11 @@ const tagRoute = express.Router();
 
 tagRoute.use(authMiddleware);
 
-tagRoute.get("/", (req, res) => {
+tagRoute.get("/", async (req, res) => {
   try {
     const query = req.query.q as string | "a";
 
-    const tags = Tags.find({
+    const tags = await Tags.find({
       name: {
         $regex: query || "",
         $options: "i",

@@ -11,17 +11,20 @@ export const createShareLink = async (req: Request, res: Response) => {
             return res.status(400).json({message: "Content ID is required"});
         }
 
+        const shareLink = `/share/${contentId}_${Math.random().toString(36).substring(2, 24)}`;
         const content = await SharableLink.create({
             contentId,
             userId: user._id,
+            url: shareLink,
         });
 
         if (!content) {
             return res.status(404).json({message: "Content not found"});
         }
 
-        res.status(201).json({shareLink: `${process.env.BASE_URL}/share/${contentId}`})
+        res.status(201).json({shareLink: `${process.env.BASE_URL}${shareLink}`});
     } catch (error) {
+        console.log(error);
         res.status(500).json({message: "Internal Server Error"})
     }
 }
@@ -30,6 +33,9 @@ export const getSharedContent = async (req: Request, res: Response) => {
     try {
         // read the id from the url
         const { id } = req.params;
+        if(!id){
+            return res.status(400).json({message: "Share link ID is required"});
+        }
 
         // check if the link is valid and not expired
         const shareLink = await SharableLink.findById(id);
@@ -57,6 +63,10 @@ export const deleteShareLink = async (req: Request, res: Response) => {
         // read the id from the url
         const { id } = req.params;
 
+        if(!id){
+            return res.status(400).json({message: "Share link ID is required"});
+        }
+        
         // check if the link is valid and not expired
         const shareLink = await SharableLink.findById(id);
 

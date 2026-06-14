@@ -4,8 +4,10 @@ import { createShareLink, deleteShareLink, getSharedContent } from '../controlle
 
 const shareRoute = express.Router();
 
-shareRoute.post("/", authMiddleware, createShareLink)
-shareRoute.get("/:id", authMiddleware, getSharedContent)
-shareRoute.delete("/:id", authMiddleware, deleteShareLink)
+shareRoute.use(authMiddleware);
+
+shareRoute.post("/", createShareLink)
+shareRoute.get("/:id", getSharedContent)
+shareRoute.delete("/:id", deleteShareLink)
 
 export default shareRoute;
