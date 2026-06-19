@@ -37,11 +37,60 @@
 - **POST** `/api/auth/logout` - Logout the user and invalidate the JWT token.
     - Response: Clear the JWT cookie and return a success message.
 
-### User APIs
+### User APIs ✅
 - **GET** `/api/users` - Retrieve a list of all users (admin only).
+    - Response: Return a list of users.
+        ```json
+        {
+            "users": [
+                {
+                    "_id": "6a2ab*******912fc38c",
+                    "name": "User",
+                    "email": "user@gmail.com",
+                    "role": "admin",
+                    "createdAt": "2026-06-11T12:54:50.764Z",
+                    "updatedAt": "2026-06-11T12:54:50.764Z"
+                }
+            ]
+        }
+        ```
 - **GET** `/api/users/:id` - Retrieve a specific user by ID.
+    - Response: Return the user info.
+        ```json
+        {
+            "_id": "6a2ab*******912fc38c",
+            "name": "User",
+            "email": "user@gmail.com",
+            "role": "admin",
+            "createdAt": "2026-06-11T12:54:50.764Z",
+            "updatedAt": "2026-06-11T12:54:50.764Z"
+        }
+        ```
 - **PUT** `/api/users/:id` - Update a specific user's information.
+    - Request body: 
+        ```json
+        {
+            "name": "Updated Name"
+        }
+        ```
+    - Response: Return the updated user info.
+        ```json
+        {
+            "_id": "6a2ab*******912fc38c",
+            "name": "Updated Name",
+            "email": "user@gmail.com",
+            "role": "admin",
+            "createdAt": "2026-06-11T12:54:50.764Z",
+            "updatedAt": "2026-06-11T13:00:00.000Z"
+        }
+        ```
 - **DELETE** `/api/users/:id` - Delete a specific user (admin only).
+    - Response: Return a success message confirming deletion.
+        ```json
+        {
+            "message": "User deleted successfully"
+        }
+        ```
 
 ### Content APIs ✅
 - **POST** `/api/content` - Create a new content item.

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+
 import { useState } from "react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -10,15 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Mail, MessageSquare, MapPin } from "lucide-react";
 
-export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact — Second Brain" },
-      { name: "description", content: "Questions, feedback, or partnership ideas? We'd love to hear from you." },
-    ],
-  }),
-  component: ContactPage,
-});
+export default function ContactPagePage() {
+  return <ContactPage />;
+}
 
 function ContactPage() {
   const [sending, setSending] = useState(false);

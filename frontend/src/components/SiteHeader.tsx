@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, NavLink } from "react-router";
 import { Brain, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -19,23 +19,22 @@ export function SiteHeader() {
             { to: "/contact", label: "Contact" },
             { to: "/privacy", label: "Privacy" },
           ].map((l) => (
-            <Link
+            <NavLink
               key={l.to}
               to={l.to}
-              className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition hover:bg-accent hover:text-accent-foreground"
-              activeProps={{ className: "rounded-md px-3 py-1.5 text-sm bg-accent text-accent-foreground font-medium" }}
+              className={({ isActive }) => `rounded-md px-3 py-1.5 text-sm transition ${isActive ? "bg-accent text-accent-foreground font-medium" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"}`}
             >
               {l.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
-            <Link to="/dashboard">Login</Link>
+            <Link to="/login">Login</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link to="/dashboard">Get started</Link>
+            <Link to="/register">Get started</Link>
           </Button>
           <Button variant="ghost" size="icon" className="md:hidden" aria-label="Menu">
             <Menu className="h-4 w-4" />

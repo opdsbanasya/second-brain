@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, NavLink } from "react-router";
 import { Brain, Search, Plus, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,20 +22,18 @@ export function Navbar({ query, onQueryChange, onCreate }: NavbarProps) {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          <Link
+          <NavLink
             to="/dashboard"
-            className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-            activeProps={{ className: "rounded-md px-3 py-1.5 text-sm bg-accent text-accent-foreground font-medium" }}
+            className={({ isActive }) => `rounded-md px-3 py-1.5 text-sm ${isActive ? "bg-accent text-accent-foreground font-medium" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"}`}
           >
             Dashboard
-          </Link>
-          <Link
+          </NavLink>
+          <NavLink
             to="/shared-links"
-            className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-            activeProps={{ className: "rounded-md px-3 py-1.5 text-sm bg-accent text-accent-foreground font-medium" }}
+            className={({ isActive }) => `rounded-md px-3 py-1.5 text-sm ${isActive ? "bg-accent text-accent-foreground font-medium" : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"}`}
           >
             Shared
-          </Link>
+          </NavLink>
         </nav>
 
         <div className="relative ml-auto hidden w-full max-w-sm md:block">

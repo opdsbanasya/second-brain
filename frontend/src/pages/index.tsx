@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import {
   ArrowRight, Sparkles, Brain, Tag, Share2, Search, Lock, Zap, Star, Quote,
 } from "lucide-react";
@@ -6,29 +6,23 @@ import { Button } from "@/components/ui/button";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Second Brain — Save, tag, and share what matters" },
-      { name: "description", content: "A calm home for the notes, links, and articles you want to remember." },
-    ],
-  }),
-  component: Landing,
-});
+export default function LandingPage() {
+  return <Landing />;
+}
 
 const features = [
-  { icon: Brain,  title: "Capture anything",   desc: "Notes, links, articles, videos — all in one quiet place." },
-  { icon: Tag,    title: "Organize with tags", desc: "Pastel tags do the heavy lifting. Filter in a single click." },
-  { icon: Search, title: "Find in a keystroke",desc: "Instant search across every word you've ever saved." },
+  { icon: Brain, title: "Capture anything", desc: "Notes, links, articles, videos — all in one quiet place." },
+  { icon: Tag, title: "Organize with tags", desc: "Pastel tags do the heavy lifting. Filter in a single click." },
+  { icon: Search, title: "Find in a keystroke", desc: "Instant search across every word you've ever saved." },
   { icon: Share2, title: "Share, revoke, repeat", desc: "Generate a public link, kill it whenever you like." },
-  { icon: Lock,   title: "Private by default",  desc: "Your archive is yours. HTTP-only cookies, no token leaks." },
-  { icon: Zap,    title: "Built for speed",     desc: "Keyboard-first interactions and a thoughtful, calm UI." },
+  { icon: Lock, title: "Private by default", desc: "Your archive is yours. HTTP-only cookies, no token leaks." },
+  { icon: Zap, title: "Built for speed", desc: "Keyboard-first interactions and a thoughtful, calm UI." },
 ];
 
 const steps = [
-  { n: "01", title: "Save",     desc: "Drop in a link, jot a note, or clip an article." },
-  { n: "02", title: "Tag",      desc: "Add a few pastel tags so future-you can find it." },
-  { n: "03", title: "Recall",   desc: "Search or filter — your second brain answers in milliseconds." },
+  { n: "01", title: "Save", desc: "Drop in a link, jot a note, or clip an article." },
+  { n: "02", title: "Tag", desc: "Add a few pastel tags so future-you can find it." },
+  { n: "03", title: "Recall", desc: "Search or filter — your second brain answers in milliseconds." },
 ];
 
 const testimonials = [

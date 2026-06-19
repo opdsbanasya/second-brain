@@ -1,16 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 
-export const Route = createFileRoute("/privacy")({
-  head: () => ({
-    meta: [
-      { title: "Privacy policy — Second Brain" },
-      { name: "description", content: "How we collect, use, and protect your data at Second Brain." },
-    ],
-  }),
-  component: PrivacyPage,
-});
+export default function PrivacyPagePage() {
+  return <PrivacyPage />;
+}
 
 const sections = [
   {

@@ -1,27 +1,34 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+
+import { useMemo, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { Navbar } from "@/components/Navbar";
 import { TagSidebar } from "@/components/TagSidebar";
 import { ContentCard } from "@/components/ContentCard";
-import { contentItems, tags, type ContentItem } from "@/lib/data";
+import { type ContentItem } from "@/lib/data";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { fetchContents } from "@/store/slices/contentSlice";
+import { fetchTags } from "@/store/slices/tagSlice";
+import { createShareLink } from "@/store/slices/shareSlice";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-export const Route = createFileRoute("/dashboard")({
-  head: () => ({
-    meta: [
-      { title: "Dashboard — Second Brain" },
-      { name: "description", content: "Your saved notes, links, and articles in one place." },
-    ],
-  }),
-  component: DashboardPage,
-});
+export default function DashboardPagePage() {
+  return <DashboardPage />;
+}
 
 function DashboardPage() {
   const [query, setQuery] = useState("");
   const [activeTagId, setActiveTagId] = useState<string | null>(null);
+  
+  const dispatch = useAppDispatch();
+  const { items: contentItems, loading: contentsLoading } = useAppSelector(state => state.content);
+  const { tags, loading: tagsLoading } = useAppSelector(state => state.tags);
+
+  useEffect(() => {
+    dispatch(fetchContents());
+    dispatch(fetchTags(""));
+  }, [dispatch]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -42,17 +49,21 @@ function DashboardPage() {
       for (const id of item.tagIds) c[id] = (c[id] ?? 0) + 1;
     }
     return c;
-  }, []);
+  }, [tags, contentItems]);
 
   const handleShare = async (item: ContentItem) => {
-    // Mock: POST /api/shared-links { contentId } -> { url }
-    const url = `https://brain.app/s/${item.id}-${Math.random().toString(36).slice(2, 8)}`;
     try {
-      await navigator.clipboard.writeText(url);
-    } catch {
-      /* ignore clipboard errors in restricted contexts */
+      const hash = await dispatch(createShareLink(item.id)).unwrap();
+      const url = `${window.location.origin}/s/${hash}`;
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch {
+        /* ignore clipboard errors in restricted contexts */
+      }
+      toast.success("Link copied!", { description: url });
+    } catch (err: any) {
+      toast.error("Failed to share", { description: err });
     }
-    toast.success("Link copied!", { description: url });
   };
 
   const handleCreate = () => {
@@ -93,7 +104,11 @@ function DashboardPage() {
             </div>
           </div>
 
-          {filtered.length === 0 ? (
+          {contentsLoading ? (
+            <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
+              <p className="text-sm text-muted-foreground">Loading content...</p>
+            </div>
+          ) : filtered.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
               <p className="text-sm text-muted-foreground">
                 Nothing here yet. Try clearing your search or filters.

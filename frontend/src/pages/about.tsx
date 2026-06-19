@@ -1,18 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart, Compass, Sprout } from "lucide-react";
 
-export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "About — Second Brain" },
-      { name: "description", content: "Why we're building a calm, focused home for the things you want to remember." },
-    ],
-  }),
-  component: AboutPage,
-});
+export default function AboutPagePage() {
+  return <AboutPage />;
+}
 
 const values = [
   { icon: Heart,   title: "Calm by default", desc: "We design against noise. Fewer pixels, more breathing room." },

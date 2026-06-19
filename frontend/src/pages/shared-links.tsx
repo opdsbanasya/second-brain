@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
@@ -24,15 +24,9 @@ import {
   type User,
 } from "@/lib/data";
 
-export const Route = createFileRoute("/shared-links")({
-  head: () => ({
-    meta: [
-      { title: "Shared links — Second Brain" },
-      { name: "description", content: "Manage the links you've shared from your second brain." },
-    ],
-  }),
-  component: SharedLinksPage,
-});
+export default function SharedLinksPagePage() {
+  return <SharedLinksPage />;
+}
 
 type Confirm =
   | { kind: "revoke"; id: string }
