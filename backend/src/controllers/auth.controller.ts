@@ -3,11 +3,22 @@ import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import type { UserInputLogin, UserInputRegister } from "../types/User.js";
+import { isStrongPassword, isValidEmail } from "../utils/validation.js";
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const userBody: UserInputRegister = req.body;
     console.log(userBody);
+
+    if (!isValidEmail(userBody.email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    if (!isStrongPassword(userBody.password)) {
+      return res.status(400).json({ 
+        message: "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character." 
+      });
+    }
 
     const hashedPassword = await bcrypt.hash(userBody.password, 10);
     userBody.password = hashedPassword;

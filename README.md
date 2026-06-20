@@ -1,6 +1,17 @@
-# APIs
-### Auth APIs ✅
-- **POST** `/api/auth/login` - Login a user and receive a JWT token.
+# Second Brain
+Second Brain is a modern, digital knowledge management application designed to help you organize, store, and effortlessly retrieve your most valuable thoughts, links, articles, and media. By leveraging tags, a sleek interface, and a robust API, Second Brain acts as your centralized repository for continuous learning and productivity.
+
+## Key Features
+- **Effortless Content Management**: Save articles, links, notes, and videos all in one unified dashboard.
+- **Dynamic Tagging System**: Categorize your content with customizable tags for rapid filtering and organization.
+- **Instant Sharing**: Generate secure, unique links to share specific notes or articles with anyone on the web.
+- **Secure Authentication**: End-to-end user registration and login with JWT-based session management and strict password validations.
+- **Beautiful, Responsive UI**: A minimalist and glassmorphic user interface built with React, Vite, and Tailwind CSS.
+
+
+## APIs
+### Auth APIs
+- **POST** `/api/v1/auth/login` - Login a user and receive a JWT token.
     - Request body: 
         ```json
         {
@@ -23,7 +34,7 @@
         }
         ```
 
-- **POST** `/api/auth/register` - Register a new user account.
+- **POST** `/api/v1/auth/register` - Register a new user account.
     - Request body: 
         ```json
         {
@@ -34,39 +45,25 @@
         ```
     - Response: Return success message and user info.
 
-- **POST** `/api/auth/logout` - Logout the user and invalidate the JWT token.
+- **POST** `/api/v1/auth/logout` - Logout the user and invalidate the JWT token.
     - Response: Clear the JWT cookie and return a success message.
 
-### User APIs ✅
-- **GET** `/api/users` - Retrieve a list of all users (admin only).
-    - Response: Return a list of users.
-        ```json
-        {
-            "users": [
-                {
-                    "_id": "6a2ab*******912fc38c",
-                    "name": "User",
-                    "email": "user@gmail.com",
-                    "role": "admin",
-                    "createdAt": "2026-06-11T12:54:50.764Z",
-                    "updatedAt": "2026-06-11T12:54:50.764Z"
-                }
-            ]
-        }
-        ```
-- **GET** `/api/users/:id` - Retrieve a specific user by ID.
+---
+
+### User APIs
+- **GET** `/api/v1/users/:id` - Retrieve a specific user by ID.
     - Response: Return the user info.
         ```json
         {
             "_id": "6a2ab*******912fc38c",
             "name": "User",
             "email": "user@gmail.com",
-            "role": "admin",
             "createdAt": "2026-06-11T12:54:50.764Z",
             "updatedAt": "2026-06-11T12:54:50.764Z"
         }
         ```
-- **PUT** `/api/users/:id` - Update a specific user's information.
+
+- **PUT** `/api/v1/users/:id` - Update a specific user's information.
     - Request body: 
         ```json
         {
@@ -84,16 +81,11 @@
             "updatedAt": "2026-06-11T13:00:00.000Z"
         }
         ```
-- **DELETE** `/api/users/:id` - Delete a specific user (admin only).
-    - Response: Return a success message confirming deletion.
-        ```json
-        {
-            "message": "User deleted successfully"
-        }
-        ```
 
-### Content APIs ✅
-- **POST** `/api/content` - Create a new content item.
+---
+
+### Content APIs
+- **POST** `/api/v1/content` - Create a new content item.
     - Request body: 
         ```json
         {
@@ -119,7 +111,7 @@
         }
         ```
 
-- **GET** `/api/content` - Retrieve a list of all content items.
+- **GET** `/api/v1/content` - Retrieve a list of all content items.
     - Response: Return a list of content items.
     ```json
         {
@@ -139,7 +131,7 @@
         }
     ```
 
-- **GET** `/api/content/:id` - Retrieve a specific content item by ID.
+- **GET** `/api/v1/content/:id` - Retrieve a specific content item by ID.
     - Response: Return the content item with the specified ID.
         ```json
         {
@@ -155,7 +147,7 @@
         }
         ```
 
-- **PUT** `/api/content/:id` - Update a specific content item.
+- **PUT** `/api/v1/content/:id` - Update a specific content item.
     - Request body: 
         ```json
         {
@@ -178,7 +170,7 @@
         }
         ```
 
-- **DELETE** `/api/content/:id` - Delete a specific content item.
+- **DELETE** `/api/v1/content/:id` - Delete a specific content item.
     - Response: Return a success message confirming deletion.
         ```json
         {
@@ -186,8 +178,10 @@
         }
         ```
 
-### Tags APIs ✅
-- **GET** `/api/tags` - Retrieve a list of all tags.
+---
+
+### Tags APIs
+- **GET** `/api/v1/tags` - Retrieve a list of all tags.
    - Response: Return a list of tags.
         ```json
         {
@@ -201,8 +195,10 @@
         }
         ```
 
-### Shared Links APIs ✅
-- **GET** `/api/shared-links` - Retrieve a list of all shared links.
+---
+
+### Shared Links APIs
+- **GET** `/api/v1/shared-links` - Retrieve a list of all shared links.
     - Response: Return a list of shared links.
         ```json
         {
@@ -217,7 +213,8 @@
             ]
         }
         ```
-- **POST** `/api/shared-links` - Create a new shared link.
+
+- **POST** `/api/v1/shared-links` - Create a new shared link.
     - Request body: 
         ```json
         {
@@ -234,7 +231,8 @@
             "__v": 0
         }
         ```
-- **DELETE** `/api/shared-links/:id` - Delete a specific shared link.
+
+- **DELETE** `/api/v1/shared-links/:id` - Delete a specific shared link.
     - Response: Return a success message confirming deletion.
         ```json
         {

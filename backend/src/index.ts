@@ -6,6 +6,7 @@ import { authRoute } from './routes/auth.routes.js';
 import tagRoute from './routes/tags.route.js';
 import contentRoute from './routes/content.route.js';
 import shareRoute from './routes/share.routes.js';
+import userRoute from './routes/user.routes.js';
 import cookieParser from 'cookie-parser';
 
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
@@ -22,6 +23,7 @@ app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/notes", contentRoute);
 app.use("/api/v1/tags", tagRoute);
 app.use("/api/v1/shared-links", shareRoute);
+app.use("/api/v1/users", userRoute);
 
 // Default route
 app.get("/", (req, res)=>{
