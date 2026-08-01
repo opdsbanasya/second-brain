@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import dns from "node:dns"
 
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_CONNECTION_STRING;

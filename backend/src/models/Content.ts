@@ -9,12 +9,11 @@ const ContentSchema = new mongoose.Schema<ContentTypes>(
     },
     link: {
       type: String,
-      required: true,
-      unique: true,
+      trim: true,
     },
     contentType: {
       type: String,
-      enum: ["link", "article", "video", "podcast", "book", "course", "other"],
+      enum: ["note","link", "article", "video", "podcast", "book", "course", "other"],
       required: true,
     },
     tags: {

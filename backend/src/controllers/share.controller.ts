@@ -4,25 +4,28 @@ import SharableLink from "../models/SharableLink.js";
 
 export const createShareLink = async (req: Request, res: Response) => {
     try {
-        const { contentId } = req.body;
+        const { contentId, expiresAt } = req.body;
         const { user } = req;
 
         if(!contentId) {
             return res.status(400).json({message: "Content ID is required"});
         }
 
-        const shareLink = `/share/${contentId}_${Math.random().toString(36).substring(2, 24)}`;
-        const content = await SharableLink.create({
+        const content = await Content.findOne({ _id: contentId, userId: user!._id });
+        if (!content) return res.status(404).json({message: "Content not found"});
+
+        const hash = crypto.randomUUID().replace(/-/g, "");
+        const expiry = expiresAt ? new Date(expiresAt) : undefined;
+        if (expiry && Number.isNaN(expiry.getTime())) return res.status(400).json({ message: "Invalid expiration date" });
+
+        const shareLink = await SharableLink.create({
             contentId,
-            userId: user._id,
-            url: shareLink,
+            userId: user!._id,
+            hash,
+            url: `/s/${hash}`,
+            ...(expiry ? { expiresAt: expiry } : {}),
         });
-
-        if (!content) {
-            return res.status(404).json({message: "Content not found"});
-        }
-
-        res.status(201).json({shareLink: `${process.env.BASE_URL}${shareLink}`});
+        res.status(201).json({ shareLink });
     } catch (error) {
         console.log(error);
         res.status(500).json({message: "Internal Server Error"})
@@ -38,11 +41,14 @@ export const getSharedContent = async (req: Request, res: Response) => {
         }
 
         // check if the link is valid and not expired
-        const shareLink = await SharableLink.findById(id);
+        const shareLink = await SharableLink.findOne({ hash: id, active: true });
 
-        if (!shareLink) {
+        if (!shareLink || (shareLink.expiresAt && shareLink.expiresAt <= new Date())) {
             return res.status(404).json({message: "Share link not found"});
         }
+
+        shareLink.viewCount += 1;
+        await shareLink.save();
 
         // get the content from the database using the id
         const content = await Content.findById(shareLink.contentId);
@@ -58,6 +64,40 @@ export const getSharedContent = async (req: Request, res: Response) => {
     }
 }
 
+export const getSharedLinks = async (req: Request, res: Response) => {
+    try {
+        const sharedLinks = await SharableLink.find({ userId: req.user!._id })
+          .populate("contentId", "title")
+          .sort({ createdAt: -1 });
+        res.json({ sharedLinks });
+    } catch {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export const updateShareLink = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { active, expiresAt } = req.body as { active?: boolean; expiresAt?: string | null };
+        const shareLink = await SharableLink.findOne({ _id: id, userId: req.user!._id });
+        if (!shareLink) return res.status(404).json({ message: "Share link not found" });
+
+        if (typeof active !== "undefined") shareLink.active = active;
+        if (typeof expiresAt !== "undefined") {
+            if (expiresAt === null || expiresAt === "") shareLink.set("expiresAt", undefined);
+            else {
+                const expiry = new Date(expiresAt);
+                if (Number.isNaN(expiry.getTime())) return res.status(400).json({ message: "Invalid expiration date" });
+                shareLink.expiresAt = expiry;
+            }
+        }
+        await shareLink.save();
+        res.json({ shareLink });
+    } catch {
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 export const deleteShareLink = async (req: Request, res: Response) => {
     try {
         // read the id from the url
@@ -68,14 +108,14 @@ export const deleteShareLink = async (req: Request, res: Response) => {
         }
         
         // check if the link is valid and not expired
-        const shareLink = await SharableLink.findById(id);
+        const shareLink = await SharableLink.findOne({ _id: id, userId: req.user!._id });
 
         if (!shareLink) {
             return res.status(404).json({message: "Share link not found"});
         }
 
         // delete the share link from the database
-        await SharableLink.findByIdAndDelete(id);
+        await SharableLink.findByIdAndDelete(shareLink._id);
 
         // send response with success message
         res.json({message: "Share link deleted successfully"});

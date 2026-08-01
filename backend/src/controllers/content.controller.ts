@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import Content from "../models/Content.js";
 import type { ContentCreateBody } from "../types/Content.js";
 import Tags from "../models/Tags.js";
+import mongoose from "mongoose";
 
 export const getAllContents = async (req: Request, res: Response) => {
   try {
@@ -46,24 +47,25 @@ export const createContent = async (req: Request, res: Response) => {
     const { user } = req;
 
     // validate body
-    if (!title || !link || !contentType) {
+    if (!title || !contentType) {
       return res
         .status(400)
-        .json({ message: "Title, link, and content type are required" });
+        .json({ message: "Title and content type are required" });
     }
 
     // create Tags
     if (tags && tags.length > 0) await checkAndCreateTags(tags);
 
     // create content
-    const content = await Content.create({
+    const contentData = {
       title,
-      link,
       contentType,
       tags: tags || [],
       description: description || "",
-      userId: user._id,
-    });
+      userId: user!._id,
+    } as any;
+    if (link) contentData.link = link;
+    const content = await Content.create(contentData);
 
     // send response
     res.status(201).json({ content });
@@ -75,17 +77,17 @@ export const createContent = async (req: Request, res: Response) => {
 
 export const getContentById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
-    if (!id) {
+    if (!id || !mongoose.isValidObjectId(id)) {
       return res.status(400).json({ message: "Content ID is required" });
     }
 
-    const content = await Content.findById(id)
+    const content = await Content.findOne({ _id: id as any, userId: req.user!._id as any })
       .populate("userId", "name email");
 
     if (!content) {
-      return res.status(404).json({ message: "Content not found" });
+      return res.status(404).json({ message: "Invalid content" });
     }
 
     res.json({ content });
@@ -97,13 +99,13 @@ export const getContentById = async (req: Request, res: Response) => {
 
 export const updateContentById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
     if (!id) {
       return res.status(400).json({ message: "Content ID is required" });
     }
 
-    const content = await Content.findById(id);
+    const content = await Content.findOne({ _id: id as any, userId: req.user!._id as any });
     if (!content) {
       return res.status(404).json({ message: "Content not found" });
     }
@@ -118,9 +120,12 @@ export const updateContentById = async (req: Request, res: Response) => {
 
     if (tags && tags.length > 0) await checkAndCreateTags(tags);
 
-    const updatedContent = await Content.findByIdAndUpdate(
-      id,
-      { title, link, contentType, tags, description },
+    const updates = Object.fromEntries(
+      Object.entries({ title, link, contentType, tags, description }).filter(([, value]) => value !== undefined),
+    );
+    const updatedContent = await Content.findOneAndUpdate(
+      { _id: id as any, userId: req.user!._id as any },
+      updates as any,
       { new: true },
     );
 
@@ -132,18 +137,18 @@ export const updateContentById = async (req: Request, res: Response) => {
 
 export const deleteContentById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
 
     if (!id) {
       return res.status(400).json({ message: "Content ID is required" });
     }
 
-    const content = await Content.findById(id);
+    const content = await Content.findOne({ _id: id as any, userId: req.user!._id as any });
     if (!content) {
       return res.status(404).json({ message: "Content not found" });
     }
 
-    await Content.findByIdAndDelete(id);
+    await Content.findByIdAndDelete(content._id);
     res.json({ message: "Content deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });

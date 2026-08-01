@@ -2,7 +2,7 @@ import express from "express";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import { createContent, deleteContentById, getAllContents, getContentById, updateContentById } from "../controllers/content.controller.js";
 
-const contentRoute = express.Router();
+const contentRoute: express.Router = express.Router();
 
 contentRoute.use(authMiddleware);
 

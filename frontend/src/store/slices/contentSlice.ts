@@ -44,7 +44,7 @@ export const createContent = createAsyncThunk(
         description: contentData.description,
       };
       const response = await api.post("/notes", payload);
-      const item = response.data;
+      const item = response.data.content;
       return {
         ...item,
         id: item._id,
@@ -65,6 +65,31 @@ export const deleteContent = createAsyncThunk(
       return id;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to delete content");
+    }
+  }
+);
+
+export const updateContent = createAsyncThunk(
+  "content/updateContent",
+  async ({ id, data }: { id: string; data: Partial<ContentItem> }, { rejectWithValue }) => {
+    try {
+      const payload = {
+        title: data.title,
+        link: data.link,
+        contentType: data.type,
+        tags: data.tagIds,
+        description: data.description,
+      };
+      const response = await api.put(`/notes/${id}`, payload);
+      const item = response.data.content;
+      return {
+        ...item,
+        id: item._id,
+        tagIds: item.tags || [],
+        type: item.contentType || "note",
+      };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || "Failed to update content");
     }
   }
 );
@@ -96,6 +121,14 @@ const contentSlice = createSlice({
     // Delete
     builder.addCase(deleteContent.fulfilled, (state, action) => {
       state.items = state.items.filter((item) => item.id !== action.payload);
+    });
+
+    // Update
+    builder.addCase(updateContent.fulfilled, (state, action) => {
+      const index = state.items.findIndex((item) => item.id === action.payload.id);
+      if (index !== -1) {
+        state.items[index] = action.payload;
+      }
     });
   },
 });

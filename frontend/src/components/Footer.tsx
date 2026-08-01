@@ -19,15 +19,15 @@ export function Footer() {
           </div>
 
           <FooterCol title="Product" links={[
-            { to: "/dashboard",     label: "Dashboard" },
-            { to: "/shared-links",  label: "Shared links" },
-            { to: "/",              label: "Pricing" },
+            { to: "/dashboard", label: "Dashboard" },
+            { to: "/shared-links", label: "Shared links" },
+            { to: "/", label: "Pricing" },
           ]} />
 
           <FooterCol title="Company" links={[
-            { to: "/about",   label: "About" },
+            { to: "/about", label: "About" },
             { to: "/contact", label: "Contact" },
-            { to: "/",        label: "Careers" },
+            { to: "/", label: "Careers" },
           ]} />
 
           <FooterCol title="Legal" links={[

@@ -11,4 +11,8 @@ export interface UserTypes {
 
 export type UserInputRegister = Omit<UserTypes, "_id" | "createdAt" | "updatedAt">;
 export type UserInputLogin = Pick<UserTypes, "email" | "password">;
-export type UserInputUpdate = Pick<UserTypes, "name" | "password">;
+export interface UserInputUpdate {
+  name?: string;
+  password?: string;
+  currentPassword?: string;
+}

@@ -1,14 +1,15 @@
-import { tags } from "@/lib/data";
+import type { Tag } from "@/lib/data";
 import { Hash } from "lucide-react";
 
 interface TagSidebarProps {
+  tags: Tag[];
   activeTagId: string | null;
   onSelect: (tagId: string | null) => void;
   counts: Record<string, number>;
   total: number;
 }
 
-export function TagSidebar({ activeTagId, onSelect, counts, total }: TagSidebarProps) {
+export function TagSidebar({ tags, activeTagId, onSelect, counts, total }: TagSidebarProps) {
   return (
     // Glassmorphism — fixed sidebar is a floating element
     <aside className="glass sticky top-20 hidden h-[calc(100vh-6rem)] w-60 shrink-0 rounded-2xl p-4 lg:block">

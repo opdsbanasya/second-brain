@@ -4,7 +4,11 @@ import User from "../models/User.js";
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { token } = req.cookies;
+    const authorization = req.header("Authorization");
+    const bearerToken = authorization?.startsWith("Bearer ")
+      ? authorization.slice(7)
+      : undefined;
+    const token = req.cookies.token || bearerToken;
 
     // Check if the token exists
     if(!token) {

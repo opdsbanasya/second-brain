@@ -8,17 +8,12 @@ export const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  // If using cookies for session/auth, enable this:
-  // withCredentials: true, 
+  withCredentials: true,
 });
 
 // Request interceptor to attach tokens if stored in localStorage
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
     return config;
   },
   (error) => {

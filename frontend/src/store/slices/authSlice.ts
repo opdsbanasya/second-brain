@@ -12,14 +12,27 @@ interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  sessionChecked: boolean;
 }
 
 const initialState: AuthState = {
   user: null,
-  isAuthenticated: !!localStorage.getItem("token"),
+  isAuthenticated: false,
   loading: false,
   error: null,
+  sessionChecked: false,
 };
+
+const normalizeUser = (user: any): User => ({ id: user._id ?? user.id, name: user.name, email: user.email });
+
+export const restoreSession = createAsyncThunk("auth/restoreSession", async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get("/users/me");
+    return { user: normalizeUser(response.data.user) };
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data?.message || "No active session");
+  }
+});
 
 // Async thunks for making API calls
 export const login = createAsyncThunk(
@@ -27,9 +40,7 @@ export const login = createAsyncThunk(
   async (credentials: Record<string, string>, { rejectWithValue }) => {
     try {
       const response = await api.post("/auth/login", credentials);
-      // Assuming response contains { token: string, user: User }
-      localStorage.setItem("token", response.data.token);
-      return response.data;
+      return { ...response.data, user: normalizeUser(response.data.user) };
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to login");
     }
@@ -41,8 +52,7 @@ export const register = createAsyncThunk(
   async (userData: Record<string, string>, { rejectWithValue }) => {
     try {
       const response = await api.post("/auth/register", userData);
-      localStorage.setItem("token", response.data.token);
-      return response.data;
+      return { ...response.data, user: normalizeUser(response.data.user) };
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to register");
     }
@@ -56,7 +66,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
-      localStorage.removeItem("token");
+      state.sessionChecked = true;
     },
     clearError: (state) => {
       state.error = null;
@@ -72,10 +82,12 @@ const authSlice = createSlice({
       state.loading = false;
       state.isAuthenticated = true;
       state.user = action.payload.user;
+      state.sessionChecked = true;
     });
     builder.addCase(login.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
+      state.sessionChecked = true;
     });
 
     // Register
@@ -87,10 +99,22 @@ const authSlice = createSlice({
       state.loading = false;
       state.isAuthenticated = true;
       state.user = action.payload.user;
+      state.sessionChecked = true;
     });
     builder.addCase(register.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
+      state.sessionChecked = true;
+    });
+    builder.addCase(restoreSession.fulfilled, (state, action) => {
+      state.isAuthenticated = true;
+      state.user = action.payload.user;
+      state.sessionChecked = true;
+    });
+    builder.addCase(restoreSession.rejected, (state) => {
+      state.isAuthenticated = false;
+      state.user = null;
+      state.sessionChecked = true;
     });
   },
 });

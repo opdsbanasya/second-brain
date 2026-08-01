@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../lib/api";
-import type { SharedLink } from "../../lib/data";
 
 interface ShareState {
   loading: boolean;
@@ -16,9 +15,8 @@ export const createShareLink = createAsyncThunk(
   "share/createShareLink",
   async (contentId: string, { rejectWithValue }) => {
     try {
-      const response = await api.post("/shared-links", { share: true, contentId });
-      // Depending on backend response format
-      return response.data.hash; 
+      const response = await api.post("/shared-links", { contentId });
+      return response.data.shareLink;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Failed to create share link");
     }

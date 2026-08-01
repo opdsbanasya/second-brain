@@ -1,15 +1,12 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import connectDB from './config/dbConfig.js';
-import dns from "dns";
 import { authRoute } from './routes/auth.routes.js';
 import tagRoute from './routes/tags.route.js';
 import contentRoute from './routes/content.route.js';
 import shareRoute from './routes/share.routes.js';
 import userRoute from './routes/user.routes.js';
 import cookieParser from 'cookie-parser';
-
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 dotenv.config();
 
@@ -18,19 +15,29 @@ const app = express();
 
 app.use(cookieParser());
 app.use(express.json());
+app.use((req, res, next) => {
+    const origin = process.env.CLIENT_URL || "http://localhost:5173";
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+    if (req.method === "OPTIONS") return res.sendStatus(204);
+    next();
+});
 
 app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/notes", contentRoute);
+app.use("/api/v1/content", contentRoute);
+app.use("/api/v1/notes", contentRoute); // Backwards-compatible alias.
 app.use("/api/v1/tags", tagRoute);
 app.use("/api/v1/shared-links", shareRoute);
 app.use("/api/v1/users", userRoute);
 
 // Default route
-app.get("/", (req, res)=>{
+app.get("/", (req, res) => {
     try {
-        res.json({message: "Welcome to the Second Brain 🤯"})
+        res.json({ message: "Welcome to the Second Brain 🤯" })
     } catch (error) {
-        res.status(500).json({message: "Internal Server Error"})
+        res.status(500).json({ message: "Internal Server Error" })
     }
 })
 

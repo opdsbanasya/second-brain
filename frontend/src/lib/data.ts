@@ -1,7 +1,7 @@
 // Mock data for the Second Brain app — swap with real API calls later.
 // All fetch calls should use `credentials: 'include'` for HTTP-only JWT cookies.
 
-export type ContentType = "article" | "link" | "note" | "video";
+export type ContentType = "article" | "link" | "note" | "video" | "podcast" | "book" | "course" | "other";
 
 export interface Tag {
   id: string;

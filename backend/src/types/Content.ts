@@ -2,7 +2,7 @@ import type mongoose from "mongoose";
 
 export interface ContentTypes {
   title: string;
-  link: string;
+  link?: string;
   contentType: string;
   description?: string;
   tags?: string[];
@@ -13,4 +13,3 @@ export interface ContentTypes {
 }
 
 export type ContentCreateBody = Omit<ContentTypes, "_id" | "createdAt" | "updatedAt">;
-

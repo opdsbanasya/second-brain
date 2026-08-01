@@ -1,7 +1,14 @@
-import { Share2, ExternalLink, MoreHorizontal, FileText, Link as LinkIcon, Video, StickyNote } from "lucide-react";
+import { Share2, ExternalLink, MoreHorizontal, FileText, Link as LinkIcon, Video, StickyNote, Pencil, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TagBadge } from "@/components/TagBadge";
-import { tagById, type ContentItem } from "@/lib/data";
+import { type ContentItem, type Tag } from "@/lib/data";
+import { Link } from "react-router";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const typeIcon = {
   article: FileText,
@@ -13,11 +20,17 @@ const typeIcon = {
 interface ContentCardProps {
   item: ContentItem;
   onShare: (item: ContentItem) => void;
+  onEdit: (item: ContentItem) => void;
+  onDelete: (item: ContentItem) => void;
 }
 
-export function ContentCard({ item, onShare }: ContentCardProps) {
-  const Icon = typeIcon[item.type];
-  const itemTags = item.tagIds.map(tagById).filter(Boolean);
+export function ContentCard({ item, onShare, onEdit, onDelete }: ContentCardProps) {
+  const Icon = typeIcon[item.type] ?? StickyNote;
+  const itemTags: Tag[] = item.tagIds.map((name, index) => ({
+    id: name,
+    name,
+    color: (["blue", "green", "violet", "amber", "teal", "rose", "pink", "slate"] as Tag["color"][])[index % 8]!,
+  }));
 
   return (
     // Minimalism — solid card surface, no glass, very subtle border, no heavy shadow
@@ -27,17 +40,31 @@ export function ContentCard({ item, onShare }: ContentCardProps) {
           <Icon className="h-3.5 w-3.5" />
           {item.type}
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 opacity-0 transition group-hover:opacity-100"
-          aria-label="More options"
-        >
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 opacity-0 transition group-hover:opacity-100 data-[state=open]:opacity-100"
+              aria-label="More options"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-36">
+            <DropdownMenuItem onClick={() => onEdit(item)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onDelete(item)} className="text-destructive focus:text-destructive">
+              <Trash className="mr-2 h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
-      <h3 className="text-base font-semibold leading-snug text-foreground">{item.title}</h3>
+      <Link to={`/content/${item.id}`} className="text-base font-semibold leading-snug text-foreground hover:text-primary capitalize">{item.title}</Link>
 
       <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
         {item.description}

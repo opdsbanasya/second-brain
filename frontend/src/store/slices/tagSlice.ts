@@ -21,7 +21,7 @@ export const fetchTags = createAsyncThunk(
       const response = await api.get(`/tags?q=${query}`);
       // Map backend tags
       return response.data.tags.map((tag: any) => ({
-        id: tag._id,
+        id: tag.name,
         name: tag.name,
         color: tag.color || "slate", // Default fallback if no color
       }));

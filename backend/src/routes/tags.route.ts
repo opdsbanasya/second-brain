@@ -2,7 +2,7 @@ import express from "express";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import Tags from "../models/Tags.js";
 
-const tagRoute = express.Router();
+const tagRoute: express.Router = express.Router();
 
 tagRoute.use(authMiddleware);
 

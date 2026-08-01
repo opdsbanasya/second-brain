@@ -17,7 +17,7 @@ export const getUser = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
     try {
         // read the user data
-        let { name, password }: UserInputUpdate = req.body;
+        let { name, password, currentPassword }: UserInputUpdate = req.body;
         const { user } = req;
 
         if(!name && !password) {
@@ -32,7 +32,16 @@ export const updateUser = async (req: Request, res: Response) => {
             });
         }
 
-        // calculate Hash Password
+        if (password) {
+            if (!currentPassword) {
+                return res.status(400).json({ message: "Current password is required" });
+            }
+            const matchesCurrentPassword = await bcrypt.compare(currentPassword, user!.password);
+            if (!matchesCurrentPassword) {
+                return res.status(400).json({ message: "Current password is incorrect" });
+            }
+        }
+
         if (password) {
             const hashPassword = await bcrypt.hash(password, 10);
             password = hashPassword;
@@ -42,7 +51,7 @@ export const updateUser = async (req: Request, res: Response) => {
         const UpdatedUser = await User.findByIdAndUpdate(
             user._id,
             {
-                name: name ? name : user.name,
+                name: name?.trim() ? name.trim() : user!.name,
                 password: password ? password : user.password,
             },
             {

@@ -1,16 +1,17 @@
-import React from 'react'
-import Header from './Header'
+import type { ReactNode } from 'react'
 import { Outlet } from 'react-router'
-import Footer from './Footer'
+import Header from './Header'
 
-const MainLayout = () => {
+const MainLayout = ({ children }: { children?: ReactNode }) => {
   return (
-    <main>
+    <div className="min-h-screen bg-background p-2 sm:p-3">
+      <div className="sticky top-2 z-50 rounded-2xl border border-border bg-card shadow-sm">
         <Header />
-        <Outlet />
-        <Footer />
-
-    </main>
+      </div>
+      <main className="mx-auto mt-4 min-h-[calc(100vh-7rem)] rounded-2xl border border-border bg-card p-4 sm:p-6">
+        {children ?? <Outlet />}
+      </main>
+    </div>
   )
 }
 

@@ -1,13 +1,14 @@
 import express from 'express';
 import authMiddleware from '../middlewares/authMiddleware.js';
-import { createShareLink, deleteShareLink, getSharedContent } from '../controllers/share.controller.js';
+import { createShareLink, deleteShareLink, getSharedContent, getSharedLinks, updateShareLink } from '../controllers/share.controller.js';
 
-const shareRoute = express.Router();
+const shareRoute: express.Router = express.Router();
 
+shareRoute.get("/public/:id", getSharedContent);
 shareRoute.use(authMiddleware);
-
-shareRoute.post("/", createShareLink)
-shareRoute.get("/:id", getSharedContent)
-shareRoute.delete("/:id", deleteShareLink)
+shareRoute.get("/", getSharedLinks);
+shareRoute.post("/", createShareLink);
+shareRoute.patch("/:id", updateShareLink);
+shareRoute.delete("/:id", deleteShareLink);
 
 export default shareRoute;

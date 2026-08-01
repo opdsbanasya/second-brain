@@ -3,7 +3,6 @@ import {
   ArrowRight, Sparkles, Brain, Tag, Share2, Search, Lock, Zap, Star, Quote,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 
 export default function LandingPage() {
@@ -27,22 +26,20 @@ const steps = [
 
 const testimonials = [
   { quote: "Finally an archive I actually re-open. The tag sidebar alone replaced three other apps.", name: "Maya R.", role: "Product designer" },
-  { quote: "Calm, fast, and the share-link revoke is exactly what I needed for client work.",          name: "Theo K.", role: "Indie consultant" },
-  { quote: "It feels like Notion, Pocket and Linear had a very tasteful baby.",                       name: "Sana P.", role: "Engineering lead" },
+  { quote: "Calm, fast, and the share-link revoke is exactly what I needed for client work.", name: "Theo K.", role: "Indie consultant" },
+  { quote: "It feels like Notion, Pocket and Linear had a very tasteful baby.", name: "Sana P.", role: "Engineering lead" },
 ];
 
 const faqs = [
-  { q: "Is my data private?",                a: "Yes. Auth uses HTTP-only cookies and your content is only accessible to you unless you explicitly create a share link." },
-  { q: "Can I revoke a shared link?",        a: "Anytime. Head to /shared-links and hit Revoke — the link dies immediately." },
+  { q: "Is my data private?", a: "Yes. Auth uses HTTP-only cookies and your content is only accessible to you unless you explicitly create a share link." },
+  { q: "Can I revoke a shared link?", a: "Anytime. Head to /shared-links and hit Revoke — the link dies immediately." },
   { q: "Do you support import from Pocket?", a: "CSV import is on the roadmap. For now you can paste links one at a time or via the bulk dialog." },
-  { q: "Is there a free plan?",              a: "Yes — generous free tier, and paid plans only if you need more storage or team features." },
+  { q: "Is there a free plan?", a: "Yes — generous free tier, and paid plans only if you need more storage or team features." },
 ];
 
 function Landing() {
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
-
       {/* HERO */}
       <section className="mx-auto max-w-4xl px-6 py-24 text-center">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">

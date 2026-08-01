@@ -6,19 +6,20 @@ import { Label } from "@/components/ui/label";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { login, clearError } from "@/store/slices/authSlice";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     dispatch(clearError());
     if (isAuthenticated) {
-      navigate("/dashboard");
+      navigate(location.state?.from || "/dashboard", { replace: true });
     }
   }, [dispatch, isAuthenticated, navigate]);
 
@@ -34,13 +35,13 @@ export default function LoginPage() {
         {/* Abstract background elements */}
         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/30 rounded-full blur-3xl" />
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
-        
+
         {/* Logo */}
         <Link to="/" className="relative z-10 flex items-center gap-2 font-bold text-2xl hover:opacity-90 transition-opacity">
           <Brain className="h-8 w-8 text-primary" />
           SecondBrain
         </Link>
-        
+
         {/* Glassmorphism Card */}
         <div className="relative z-10 backdrop-blur-xl bg-white/5 border border-white/10 p-8 rounded-2xl shadow-2xl max-w-lg">
           <blockquote className="space-y-4">
@@ -60,7 +61,7 @@ export default function LoginPage() {
           <Brain className="h-6 w-6 text-primary" />
           SecondBrain
         </Link>
-        
+
         <div className="w-full max-w-sm space-y-8">
           <div className="space-y-2 text-center lg:text-left">
             <h1 className="text-3xl font-semibold tracking-tight">Welcome back</h1>
@@ -79,14 +80,14 @@ export default function LoginPage() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-muted-foreground">Email address</Label>
-                <Input 
-                  id="email" 
-                  type="email" 
+                <Input
+                  id="email"
+                  type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com" 
-                  required 
-                  className="bg-transparent border-border focus-visible:ring-1 focus-visible:ring-primary shadow-none transition-colors" 
+                  placeholder="name@example.com"
+                  required
+                  className="bg-transparent border-border focus-visible:ring-1 focus-visible:ring-primary shadow-none transition-colors"
                 />
               </div>
               <div className="space-y-2">
@@ -96,13 +97,13 @@ export default function LoginPage() {
                     Forgot password?
                   </Link>
                 </div>
-                <Input 
-                  id="password" 
-                  type="password" 
+                <Input
+                  id="password"
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required 
-                  className="bg-transparent border-border focus-visible:ring-1 focus-visible:ring-primary shadow-none transition-colors" 
+                  required
+                  className="bg-transparent border-border focus-visible:ring-1 focus-visible:ring-primary shadow-none transition-colors"
                 />
               </div>
             </div>

@@ -5,14 +5,17 @@ interface SharableLinkTypes {
   contentId: mongoose.Schema.Types.ObjectId;
   userId: mongoose.Schema.Types.ObjectId;
   url: string;
-  expiresAt: Date;
+  expiresAt?: Date;
+  active: boolean;
+  viewCount: number;
 }
 
 const SharableLinkSchema = new mongoose.Schema<SharableLinkTypes>(
   {
     hash: {
       type: String,
-      // unique: true,
+      required: true,
+      unique: true,
     },
     contentId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -30,6 +33,14 @@ const SharableLinkSchema = new mongoose.Schema<SharableLinkTypes>(
     },
     expiresAt: {
       type: Date,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    viewCount: {
+      type: Number,
+      default: 0,
     },
   },
   {

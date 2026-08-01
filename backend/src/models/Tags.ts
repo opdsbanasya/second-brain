@@ -5,7 +5,8 @@ export const TagsSchema = new mongoose.Schema<TagsTypes>({
     name: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        lowercase: true
     }
 })
 

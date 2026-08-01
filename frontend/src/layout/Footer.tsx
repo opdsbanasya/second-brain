@@ -1,5 +1,4 @@
 import { Link } from "@radix-ui/react-navigation-menu";
-import React from "react";
 import { BiBrain } from "react-icons/bi";
 
 const Footer = () => {
