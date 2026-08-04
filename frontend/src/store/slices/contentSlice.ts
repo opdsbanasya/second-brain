@@ -27,9 +27,11 @@ export const fetchContents = createAsyncThunk(
         type: item.contentType || "note",
       }));
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch contents");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch contents",
+      );
     }
-  }
+  },
 );
 
 export const createContent = createAsyncThunk(
@@ -52,9 +54,11 @@ export const createContent = createAsyncThunk(
         type: item.contentType || "note",
       };
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to create content");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to create content",
+      );
     }
-  }
+  },
 );
 
 export const deleteContent = createAsyncThunk(
@@ -64,14 +68,19 @@ export const deleteContent = createAsyncThunk(
       await api.delete(`/notes/${id}`);
       return id;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to delete content");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete content",
+      );
     }
-  }
+  },
 );
 
 export const updateContent = createAsyncThunk(
   "content/updateContent",
-  async ({ id, data }: { id: string; data: Partial<ContentItem> }, { rejectWithValue }) => {
+  async (
+    { id, data }: { id: string; data: Partial<ContentItem> },
+    { rejectWithValue },
+  ) => {
     try {
       const payload = {
         title: data.title,
@@ -89,9 +98,11 @@ export const updateContent = createAsyncThunk(
         type: item.contentType || "note",
       };
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update content");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update content",
+      );
     }
-  }
+  },
 );
 
 const contentSlice = createSlice({
@@ -125,7 +136,9 @@ const contentSlice = createSlice({
 
     // Update
     builder.addCase(updateContent.fulfilled, (state, action) => {
-      const index = state.items.findIndex((item) => item.id === action.payload.id);
+      const index = state.items.findIndex(
+        (item) => item.id === action.payload.id,
+      );
       if (index !== -1) {
         state.items[index] = action.payload;
       }

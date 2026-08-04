@@ -18,9 +18,11 @@ export const createShareLink = createAsyncThunk(
       const response = await api.post("/shared-links", { contentId });
       return response.data.shareLink;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to create share link");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to create share link",
+      );
     }
-  }
+  },
 );
 
 const shareSlice = createSlice({

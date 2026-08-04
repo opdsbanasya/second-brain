@@ -1,4 +1,3 @@
-
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
 
@@ -48,14 +47,17 @@ const sections = [
 function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
 
       <section className="mx-auto max-w-3xl px-6 py-20">
-        <div className="text-xs font-semibold uppercase tracking-wider text-primary">Legal</div>
+        <div className="text-xs font-semibold uppercase tracking-wider text-primary">
+          Legal
+        </div>
         <h1 className="mt-2 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
           Privacy policy
         </h1>
-        <p className="mt-3 text-sm text-muted-foreground">Last updated: June 16, 2026</p>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Last updated: June 16, 2026
+        </p>
 
         <p className="mt-8 text-base leading-relaxed text-muted-foreground">
           We wrote this policy in plain English because that's how privacy
@@ -66,8 +68,12 @@ function PrivacyPage() {
         <div className="mt-12 space-y-8">
           {sections.map((s) => (
             <section key={s.title}>
-              <h2 className="text-base font-semibold text-foreground">{s.title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+              <h2 className="text-base font-semibold text-foreground">
+                {s.title}
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {s.body}
+              </p>
             </section>
           ))}
         </div>

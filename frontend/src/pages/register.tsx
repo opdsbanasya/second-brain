@@ -15,7 +15,9 @@ export default function RegisterPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
+  const { loading, error, isAuthenticated } = useAppSelector(
+    (state) => state.auth,
+  );
 
   useEffect(() => {
     dispatch(clearError());
@@ -33,14 +35,19 @@ export default function RegisterPage() {
     <div className="flex min-h-screen w-full bg-background">
       {/* Left Column - Form (Minimalism 80%) */}
       <div className="flex w-full lg:w-1/2 flex-col justify-center items-center p-8 sm:p-12 relative order-2 lg:order-1">
-        <Link to="/" className="absolute top-8 left-8 lg:hidden flex items-center gap-2 font-bold text-xl">
+        <Link
+          to="/"
+          className="absolute top-8 left-8 lg:hidden flex items-center gap-2 font-bold text-xl"
+        >
           <Brain className="h-6 w-6 text-primary" />
           Second Brain
         </Link>
 
         <div className="w-full max-w-sm space-y-8">
           <div className="space-y-2 text-center lg:text-left">
-            <h1 className="text-3xl font-semibold tracking-tight">Create an account</h1>
+            <h1 className="text-3xl font-semibold tracking-tight">
+              Create an account
+            </h1>
             <p className="text-sm text-muted-foreground">
               Enter your details below to get started.
             </p>
@@ -55,7 +62,9 @@ export default function RegisterPage() {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-muted-foreground">Full Name</Label>
+                <Label htmlFor="name" className="text-muted-foreground">
+                  Full Name
+                </Label>
                 <Input
                   id="name"
                   type="text"
@@ -67,7 +76,9 @@ export default function RegisterPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-muted-foreground">Email address</Label>
+                <Label htmlFor="email" className="text-muted-foreground">
+                  Email address
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -79,7 +90,9 @@ export default function RegisterPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-muted-foreground">Password</Label>
+                <Label htmlFor="password" className="text-muted-foreground">
+                  Password
+                </Label>
                 <Input
                   id="password"
                   type="password"
@@ -91,15 +104,24 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <Button type="submit" className="w-full shadow-none group transition-all" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full shadow-none group transition-all"
+              disabled={loading}
+            >
               {loading ? "Creating Account..." : "Create Account"}
-              {!loading && <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />}
+              {!loading && (
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              )}
             </Button>
           </form>
 
           <div className="text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link to="/login" className="font-medium text-primary hover:text-primary/80 transition-colors">
+            <Link
+              to="/login"
+              className="font-medium text-primary hover:text-primary/80 transition-colors"
+            >
               Sign in
             </Link>
           </div>
@@ -114,7 +136,10 @@ export default function RegisterPage() {
 
         {/* Logo */}
         <div className="flex justify-end w-full relative z-10">
-          <Link to="/" className="flex items-center gap-2 font-bold text-2xl hover:opacity-90 transition-opacity">
+          <Link
+            to="/"
+            className="flex items-center gap-2 font-bold text-2xl hover:opacity-90 transition-opacity"
+          >
             SecondBrain
             <Brain className="h-8 w-8 text-primary" />
           </Link>
@@ -124,7 +149,8 @@ export default function RegisterPage() {
         <div className="relative z-10 backdrop-blur-xl bg-white/5 border border-white/10 p-8 rounded-2xl shadow-2xl max-w-lg self-end text-right">
           <blockquote className="space-y-4">
             <p className="text-xl font-medium leading-relaxed">
-              "Finally, a place where my ideas can breathe. The tags and instant search mean I never lose a thought again."
+              "Finally, a place where my ideas can breathe. The tags and instant
+              search mean I never lose a thought again."
             </p>
             <footer className="text-sm text-zinc-400">
               — Sarah Chen, Researcher

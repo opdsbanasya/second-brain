@@ -23,16 +23,25 @@ const initialState: AuthState = {
   sessionChecked: false,
 };
 
-const normalizeUser = (user: any): User => ({ id: user._id ?? user.id, name: user.name, email: user.email });
-
-export const restoreSession = createAsyncThunk("auth/restoreSession", async (_, { rejectWithValue }) => {
-  try {
-    const response = await api.get("/users/me");
-    return { user: normalizeUser(response.data.user) };
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data?.message || "No active session");
-  }
+const normalizeUser = (user: any): User => ({
+  id: user._id ?? user.id,
+  name: user.name,
+  email: user.email,
 });
+
+export const restoreSession = createAsyncThunk(
+  "auth/restoreSession",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/users/me");
+      return { user: normalizeUser(response.data.user) };
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "No active session",
+      );
+    }
+  },
+);
 
 // Async thunks for making API calls
 export const login = createAsyncThunk(
@@ -42,9 +51,11 @@ export const login = createAsyncThunk(
       const response = await api.post("/auth/login", credentials);
       return { ...response.data, user: normalizeUser(response.data.user) };
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to login");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to login",
+      );
     }
-  }
+  },
 );
 
 export const register = createAsyncThunk(
@@ -54,9 +65,11 @@ export const register = createAsyncThunk(
       const response = await api.post("/auth/register", userData);
       return { ...response.data, user: normalizeUser(response.data.user) };
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to register");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to register",
+      );
     }
-  }
+  },
 );
 
 const authSlice = createSlice({
@@ -70,7 +83,7 @@ const authSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     // Login

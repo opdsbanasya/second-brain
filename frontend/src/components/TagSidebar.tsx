@@ -9,7 +9,13 @@ interface TagSidebarProps {
   total: number;
 }
 
-export function TagSidebar({ tags, activeTagId, onSelect, counts, total }: TagSidebarProps) {
+export function TagSidebar({
+  tags,
+  activeTagId,
+  onSelect,
+  counts,
+  total,
+}: TagSidebarProps) {
   return (
     // Glassmorphism — fixed sidebar is a floating element
     <aside className="glass sticky top-20 hidden h-[calc(100vh-6rem)] w-60 shrink-0 rounded-2xl p-4 lg:block">

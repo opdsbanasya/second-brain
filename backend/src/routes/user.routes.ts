@@ -6,7 +6,7 @@ const router: express.Router = express.Router();
 
 router.use(authMiddleware);
 
-router.put("/update", updateUser);
+router.put("/me", updateUser);
 router.get("/me", getUser);
 
 export default router;

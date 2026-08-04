@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
-import { Outlet } from 'react-router'
-import Header from './Header'
+import type { ReactNode } from "react";
+import { Outlet } from "react-router";
+import Header from "./Header";
 
 const MainLayout = ({ children }: { children?: ReactNode }) => {
   return (
@@ -12,7 +12,7 @@ const MainLayout = ({ children }: { children?: ReactNode }) => {
         {children ?? <Outlet />}
       </main>
     </div>
-  )
-}
+  );
+};
 
 export default MainLayout;

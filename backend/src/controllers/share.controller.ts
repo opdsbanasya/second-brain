@@ -14,9 +14,25 @@ export const createShareLink = async (req: Request, res: Response) => {
         const content = await Content.findOne({ _id: contentId, userId: user!._id });
         if (!content) return res.status(404).json({message: "Content not found"});
 
-        const hash = crypto.randomUUID().replace(/-/g, "");
         const expiry = expiresAt ? new Date(expiresAt) : undefined;
         if (expiry && Number.isNaN(expiry.getTime())) return res.status(400).json({ message: "Invalid expiration date" });
+
+        const existingLink = await SharableLink.findOne({
+            contentId,
+            userId: user!._id,
+            active: true,
+            $or: [
+                { expiresAt: { $exists: false } },
+                { expiresAt: null },
+                { expiresAt: { $gt: new Date() } }
+            ]
+        });
+
+        if (existingLink) {
+            return res.status(200).json({ shareLink: existingLink });
+        }
+
+        const hash = crypto.randomUUID().replace(/-/g, "");
 
         const shareLink = await SharableLink.create({
             contentId,

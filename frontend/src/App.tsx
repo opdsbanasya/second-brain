@@ -18,7 +18,9 @@ import { restoreSession } from "./store/slices/authSlice";
 import MainLayout from "./layout/MainLayout";
 const App = () => {
   const dispatch = useAppDispatch();
-  useEffect(() => { dispatch(restoreSession()); }, [dispatch]);
+  useEffect(() => {
+    dispatch(restoreSession());
+  }, [dispatch]);
   return (
     <Routes>
       <Route element={<MainLayout />}>

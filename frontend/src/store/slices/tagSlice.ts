@@ -26,9 +26,11 @@ export const fetchTags = createAsyncThunk(
         color: tag.color || "slate", // Default fallback if no color
       }));
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch tags");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch tags",
+      );
     }
-  }
+  },
 );
 
 const tagSlice = createSlice({

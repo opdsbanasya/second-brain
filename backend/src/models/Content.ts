@@ -27,6 +27,7 @@ const ContentSchema = new mongoose.Schema<ContentTypes>(
     },
     description: {
       type: String,
+      trim: true,
     },
   },
   {
