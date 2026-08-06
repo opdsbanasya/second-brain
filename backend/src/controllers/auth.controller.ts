@@ -5,10 +5,15 @@ import jwt from "jsonwebtoken";
 import type { UserInputLogin, UserInputRegister } from "../types/User.js";
 import { isStrongPassword, isValidEmail } from "../utils/validation.js";
 
-const setSessionCookie = (res: Response, user: { _id: unknown; email: string }) => {
+const setSessionCookie = (
+  res: Response,
+  user: { _id: unknown; email: string },
+) => {
   const secretKey = process.env.JWT_SECRET;
   if (!secretKey) throw new Error("JWT_SECRET is not configured");
-  const token = jwt.sign({ _id: user._id, email: user.email }, secretKey, { expiresIn: 2 * 24 * 60 * 60 });
+  const token = jwt.sign({ _id: user._id, email: user.email }, secretKey, {
+    expiresIn: 2 * 24 * 60 * 60,
+  });
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -26,20 +31,29 @@ export const registerUser = async (req: Request, res: Response) => {
     }
 
     if (!isStrongPassword(userBody.password)) {
-      return res.status(400).json({ 
-        message: "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character." 
+      return res.status(400).json({
+        message:
+          "Password must be at least 8 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
       });
     }
 
     const hashedPassword = await bcrypt.hash(userBody.password, 10);
     userBody.password = hashedPassword;
 
-    const user = await User.create({ ...userBody, email: userBody.email.toLowerCase() });
+    const user = await User.create({
+      ...userBody,
+      email: userBody.email.toLowerCase(),
+    });
 
     const { password: _, ...userWithoutPassword } = user.toObject();
     setSessionCookie(res, user);
 
-    res.status(201).json({ message: "User created successfully", user: userWithoutPassword });
+    res
+      .status(201)
+      .json({
+        message: "User created successfully",
+        user: userWithoutPassword,
+      });
   } catch (error) {
     res.status(400).json({ message: "Bad Request" });
   }
@@ -67,15 +81,21 @@ export const loginUser = async (req: Request, res: Response) => {
     setSessionCookie(res, user);
     const { password: _, ...userWithoutPassword } = user.toObject();
     // Send response with user data
-    res.status(200).json({ message: "Login successful", user: userWithoutPassword });
+    res
+      .status(200)
+      .json({ message: "Login successful", user: userWithoutPassword });
   } catch (error) {
     res.status(400).json({ message: "Bad Request" });
   }
 };
 
-export const logoutUser = (req: Request, res: Response ) => {
+export const logoutUser = (req: Request, res: Response) => {
   try {
-    res.clearCookie("token", { httpOnly: true, sameSite: "strict", secure: process.env.NODE_ENV === "production" });
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+    });
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     res.status(400).json({ message: "Bad Request" });

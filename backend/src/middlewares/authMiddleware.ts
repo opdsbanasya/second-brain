@@ -1,9 +1,23 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { APIKey } from "../models/APIKeys.js";
 
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // 1. Check for API Key first (for MCP Server / programmatic access)
+    const apiKeyHeader = req.header("x-api-key");
+    if (apiKeyHeader) {
+      const apiKeyDoc = await APIKey.findOne({ key: apiKeyHeader }).populate("user");
+      if (!apiKeyDoc || !apiKeyDoc.user) {
+        return res.status(401).json({ message: "Invalid API Key" });
+      }
+      // Populate replaces the Object ID with the actual User document
+      req.user = apiKeyDoc.user;
+      return next();
+    }
+
+    // 2. Fall back to standard JWT session authentication
     const authorization = req.header("Authorization");
     const bearerToken = authorization?.startsWith("Bearer ")
       ? authorization.slice(7)
@@ -29,7 +43,7 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
         return res.status(401).json({ message: "Unauthorized" });
     }
     
-    // chack if user exist in database
+    // check if user exist in database
     const user = await User.findById(userId);
     if(!user) {
         return res.status(401).json({ message: "Unauthorized" });
