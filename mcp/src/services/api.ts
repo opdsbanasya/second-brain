@@ -6,6 +6,7 @@ export class SecondBrainApi {
       `${env.SECOND_BRAIN_API_URL}${path}`,
       {
         headers: {
+          "x-api-key": env.SECOND_BRAIN_API_KEY,
           Authorization: `Bearer ${env.SECOND_BRAIN_API_KEY}`,
           "Content-Type": "application/json",
         },
@@ -25,6 +26,7 @@ export class SecondBrainApi {
       {
         method: "POST",
         headers: {
+          "x-api-key": env.SECOND_BRAIN_API_KEY,
           Authorization: `Bearer ${env.SECOND_BRAIN_API_KEY}`,
           "Content-Type": "application/json",
         },

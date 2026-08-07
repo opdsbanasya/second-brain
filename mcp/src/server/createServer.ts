@@ -1,4 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/server";
+import { registerSearchTool } from "../tools/searchTool.js";
+import { registerCreateNoteTool } from "../tools/createNoteTool.js";
+import { registerTagTools } from "../tools/tagTool.js";
+import { registerResources } from "../resources/index.js";
+import { registerPrompts } from "../prompts/index.js";
 
 export const createServer = () => {
   const server = new McpServer({
@@ -17,6 +22,12 @@ export const createServer = () => {
       };
     }
   );
+
+  registerSearchTool(server);
+  registerCreateNoteTool(server);
+  registerTagTools(server);
+  registerResources(server);
+  registerPrompts(server);
 
   return server;
 };

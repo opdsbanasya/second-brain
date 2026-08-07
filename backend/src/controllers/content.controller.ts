@@ -71,7 +71,7 @@ export const createContent = async (req: Request, res: Response) => {
     res.status(201).json({ content });
   } catch (error) {
     console.error("Error creating content:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error", error });
   }
 };
 
@@ -151,6 +151,31 @@ export const deleteContentById = async (req: Request, res: Response) => {
     await Content.findByIdAndDelete(content._id);
     res.json({ message: "Content deleted successfully" });
   } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const searchContent = async (req: Request, res: Response) => {
+  try {
+    // read query parameter (support both 'query' and 'q')
+    const query = (req.query.query || req.query.q) as string;
+
+    if (!query) return res.status(400).json({ message: "Query is required" });
+
+    // search in db using regex (title, description, tags)
+    const results = await Content.find({
+      userId: req.user!._id as any,
+      $or: [
+        { title: { $regex: query, $options: "i" } },
+        { description: { $regex: query, $options: "i" } },
+        { tags: { $elemMatch: { $regex: query, $options: "i" } } },
+      ],
+    }).populate("userId", "name email");
+
+    // send
+    res.json({ contents: results });
+  } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

@@ -43,7 +43,7 @@ app.use((req, res, next) => {
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/content", contentRoute);
-app.use("/api/v1/notes", contentRoute); // Backwards-compatible alias.
+// app.use("/api/v1/notes", contentRoute);
 app.use("/api/v1/tags", tagRoute);
 app.use("/api/v1/shared-links", shareRoute);
 app.use("/api/v1/users", userRoute);

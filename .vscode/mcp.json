@@ -1,0 +1,13 @@
+{
+  "servers": {
+    "second-brain": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "dist/index.js"
+      ],
+      "cwd": "${workspaceFolder}/mcp",
+      "envFile": "${workspaceFolder}/mcp/.env"
+    }
+  }
+}

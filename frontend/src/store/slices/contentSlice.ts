@@ -18,7 +18,7 @@ export const fetchContents = createAsyncThunk(
   "content/fetchContents",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/notes");
+      const response = await api.get("/content");
       // Map backend _id to id, and tags to tagIds to match frontend types
       return response.data.contents.map((item: any) => ({
         ...item,
@@ -45,7 +45,7 @@ export const createContent = createAsyncThunk(
         tags: contentData.tagIds,
         description: contentData.description,
       };
-      const response = await api.post("/notes", payload);
+      const response = await api.post("/content", payload);
       const item = response.data.content;
       return {
         ...item,
@@ -65,7 +65,7 @@ export const deleteContent = createAsyncThunk(
   "content/deleteContent",
   async (id: string, { rejectWithValue }) => {
     try {
-      await api.delete(`/notes/${id}`);
+      await api.delete(`/content/${id}`);
       return id;
     } catch (error: any) {
       return rejectWithValue(
@@ -89,7 +89,7 @@ export const updateContent = createAsyncThunk(
         tags: data.tagIds,
         description: data.description,
       };
-      const response = await api.put(`/notes/${id}`, payload);
+      const response = await api.put(`/content/${id}`, payload);
       const item = response.data.content;
       return {
         ...item,
