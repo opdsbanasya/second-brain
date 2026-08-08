@@ -1,5 +1,6 @@
+import { useState, useEffect } from "react";
 import { Bell, Brain, LogOut, Search, User } from "lucide-react";
-import { Link, NavLink, useNavigate } from "react-router";
+import { Link, NavLink, useNavigate, useLocation } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import {
@@ -12,12 +13,50 @@ import {
 } from "../components/ui/dropdown-menu";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logout } from "../store/slices/authSlice";
+import { searchContents, fetchContents } from "../store/slices/contentSlice";
 import api from "../lib/api";
 
 const Header = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const [query, setQuery] = useState("");
+
+  // Debounce search API calls by 300ms
+  useEffect(() => {
+    // Skip initial mount empty query if not intended
+    const timer = setTimeout(() => {
+      if (query.trim()) {
+        dispatch(searchContents(query));
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query, dispatch]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    if (location.pathname !== "/dashboard" && value.trim()) {
+      navigate("/dashboard");
+    }
+    if (!value.trim()) {
+      dispatch(fetchContents());
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (location.pathname !== "/dashboard") {
+      navigate("/dashboard");
+    }
+    if (query.trim()) {
+      dispatch(searchContents(query));
+    } else {
+      dispatch(fetchContents());
+    }
+  };
 
   const signOut = async () => {
     try {
@@ -46,13 +85,15 @@ const Header = () => {
               <HeaderLink to="/dashboard">Dashboard</HeaderLink>
               <HeaderLink to="/shared-links">Shared</HeaderLink>
             </nav>
-            <div className="relative ml-auto hidden w-full max-w-sm md:block">
+            <form onSubmit={handleSearchSubmit} className="relative ml-auto hidden w-full max-w-sm md:block">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
+                value={query}
+                onChange={handleSearchChange}
                 placeholder="Search your second brain..."
                 className="h-9 pl-9"
               />
-            </div>
+            </form>
             <Button
               variant="ghost"
               size="icon"
@@ -64,8 +105,8 @@ const Header = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="gap-2">
-                  <User className="h-4 w-4" />
-                  <span className="max-w-28 truncate">
+                  <User className="h-4 w-4 text-primary" />
+                  <span className="max-w-28 truncate font-medium">
                     {user?.name ?? "Account"}
                   </span>
                 </Button>
@@ -92,16 +133,18 @@ const Header = () => {
         ) : (
           <>
             <nav className="ml-auto hidden items-center gap-1 md:flex">
+              <HeaderLink to="/dashboard">Dashboard</HeaderLink>
+              <HeaderLink to="/shared-links">Shared</HeaderLink>
+              <HeaderLink to="/#pricing">Pricing</HeaderLink>
+              <HeaderLink to="/#mcp">Docs</HeaderLink>
               <HeaderLink to="/about">About</HeaderLink>
-              <HeaderLink to="/contact">Contact</HeaderLink>
-              <HeaderLink to="/privacy">Privacy</HeaderLink>
             </nav>
             <div className="ml-auto flex items-center gap-2 md:ml-4">
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/login">Login</Link>
+                <Link to="/login">Sign In</Link>
               </Button>
-              <Button size="sm" asChild>
-                <Link to="/register">Get started</Link>
+              <Button size="sm" asChild className="bg-[#4F46E5] text-white hover:bg-[#4338CA] font-medium shadow-xs">
+                <Link to="/register">Start Free</Link>
               </Button>
             </div>
           </>

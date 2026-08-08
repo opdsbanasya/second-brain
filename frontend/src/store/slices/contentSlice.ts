@@ -6,12 +6,14 @@ interface ContentState {
   items: ContentItem[];
   loading: boolean;
   error: string | null;
+  searchQuery: string;
 }
 
 const initialState: ContentState = {
   items: [],
   loading: false,
   error: null,
+  searchQuery: "",
 };
 
 export const fetchContents = createAsyncThunk(
@@ -105,6 +107,36 @@ export const updateContent = createAsyncThunk(
   },
 );
 
+export const searchContents = createAsyncThunk(
+  "content/searchContents",
+  async (query: string, { rejectWithValue }) => {
+    try {
+      if (!query.trim()) {
+        const response = await api.get("/content");
+        return response.data.contents.map((item: any) => ({
+          ...item,
+          id: item._id,
+          tagIds: item.tags || [],
+          type: item.contentType || "note",
+        }));
+      }
+      const response = await api.get(
+        `/content/search?q=${encodeURIComponent(query.trim())}`,
+      );
+      return (response.data.contents || []).map((item: any) => ({
+        ...item,
+        id: item._id,
+        tagIds: item.tags || [],
+        type: item.contentType || "note",
+      }));
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to search content",
+      );
+    }
+  },
+);
+
 const contentSlice = createSlice({
   name: "content",
   initialState,
@@ -118,8 +150,25 @@ const contentSlice = createSlice({
     builder.addCase(fetchContents.fulfilled, (state, action) => {
       state.loading = false;
       state.items = action.payload;
+      state.searchQuery = "";
     });
     builder.addCase(fetchContents.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload as string;
+    });
+
+    // Search
+    builder.addCase(searchContents.pending, (state, action) => {
+      state.loading = true;
+      state.error = null;
+      state.searchQuery = action.meta.arg;
+    });
+    builder.addCase(searchContents.fulfilled, (state, action) => {
+      state.loading = false;
+      state.items = action.payload;
+      state.searchQuery = action.meta.arg;
+    });
+    builder.addCase(searchContents.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload as string;
     });
