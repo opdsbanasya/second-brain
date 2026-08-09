@@ -1,14 +1,17 @@
 import express from "express";
 import authMiddleware from "../middlewares/authMiddleware.js";
 import Tags from "../models/Tags.js";
+import { sanitizeSearchQuery } from "../middlewares/searchQuery.js";
 
 const tagRoute: express.Router = express.Router();
 
 tagRoute.use(authMiddleware);
 
-tagRoute.get("/", async (req, res) => {
+tagRoute.get("/", sanitizeSearchQuery, async (req, res) => {
   try {
-    const query = req.query.q as string | "a";
+    const query = req?.rawQuery;
+
+    if (!query) return res.status(400).json({ message: "Query is required" });
 
     const tags = await Tags.find({
       name: {

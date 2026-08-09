@@ -83,8 +83,10 @@ export const getContentById = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Content ID is required" });
     }
 
-    const content = await Content.findOne({ _id: id as any, userId: req.user!._id as any })
-      .populate("userId", "name email");
+    const content = await Content.findOne({
+      _id: id as any,
+      userId: req.user!._id as any,
+    }).populate("userId", "name email");
 
     if (!content) {
       return res.status(404).json({ message: "Invalid content" });
@@ -105,7 +107,10 @@ export const updateContentById = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Content ID is required" });
     }
 
-    const content = await Content.findOne({ _id: id as any, userId: req.user!._id as any });
+    const content = await Content.findOne({
+      _id: id as any,
+      userId: req.user!._id as any,
+    });
     if (!content) {
       return res.status(404).json({ message: "Content not found" });
     }
@@ -121,7 +126,9 @@ export const updateContentById = async (req: Request, res: Response) => {
     if (tags && tags.length > 0) await checkAndCreateTags(tags);
 
     const updates = Object.fromEntries(
-      Object.entries({ title, link, contentType, tags, description }).filter(([, value]) => value !== undefined),
+      Object.entries({ title, link, contentType, tags, description }).filter(
+        ([, value]) => value !== undefined,
+      ),
     );
     const updatedContent = await Content.findOneAndUpdate(
       { _id: id as any, userId: req.user!._id as any },
@@ -143,7 +150,10 @@ export const deleteContentById = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Content ID is required" });
     }
 
-    const content = await Content.findOne({ _id: id as any, userId: req.user!._id as any });
+    const content = await Content.findOne({
+      _id: id as any,
+      userId: req.user!._id as any,
+    });
     if (!content) {
       return res.status(404).json({ message: "Content not found" });
     }
@@ -158,9 +168,7 @@ export const deleteContentById = async (req: Request, res: Response) => {
 export const searchContent = async (req: Request, res: Response) => {
   try {
     // read query parameter (support both 'query' and 'q')
-    const query = (req.query.query || req.query.q) as string;
-
-    if (!query) return res.status(400).json({ message: "Query is required" });
+    const query = req.rawQuery as string;
 
     // search in db using regex (title, description, tags)
     const results = await Content.find({
