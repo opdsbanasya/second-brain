@@ -69,7 +69,7 @@ export default function SharedContentPage() {
   const Icon = getContentIcon(content.contentType);
   return (
     <main className="min-h-screen bg-background px-5 py-12 sm:px-8">
-      <article className="mx-auto max-w-2xl rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-10">
+      <article className="mx-auto max-w-4xl rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-10">
         <Link
           to="/"
           className="mb-8 inline-flex text-sm font-semibold text-primary"

@@ -199,7 +199,7 @@ export default function ContentDetailPage() {
 
   return (
     <main className="min-h-screen bg-background px-4 py-8 sm:px-8 sm:py-12">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-5xl">
         {/* Navigation & Action Header */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-border/60 pb-4">
           <Link
