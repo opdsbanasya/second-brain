@@ -9,6 +9,7 @@ import userRoute from "./routes/user.routes.js";
 import cookieParser from "cookie-parser";
 import apiKey from "./routes/apiKeys.route.js";
 import rateLimit from "express-rate-limit";
+import cors from "cors";
 
 dotenv.config();
 
@@ -28,22 +29,19 @@ app.use(express.json());
 
 // Apply rate limiter to all API routes
 app.use("/api", apiLimiter);
-app.use((req, res, next) => {
-  const origin = process.env.CLIENT_URL || "http://localhost:5173";
-  res.header("Access-Control-Allow-Origin", origin);
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-  );
-  if (req.method === "OPTIONS") return res.sendStatus(204);
-  next();
-});
+
+const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+
+app.use(
+  cors({
+    origin: [clientUrl],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  }),
+);
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/content", contentRoute);
-// app.use("/api/v1/notes", contentRoute);
 app.use("/api/v1/tags", tagRoute);
 app.use("/api/v1/shared-links", shareRoute);
 app.use("/api/v1/users", userRoute);
