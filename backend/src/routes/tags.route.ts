@@ -9,9 +9,7 @@ tagRoute.use(authMiddleware);
 
 tagRoute.get("/", sanitizeSearchQuery, async (req, res) => {
   try {
-    const query = req?.rawQuery;
-
-    if (!query) return res.status(400).json({ message: "Query is required" });
+    const query = req?.rawQuery || "";
 
     const tags = await Tags.find({
       name: {

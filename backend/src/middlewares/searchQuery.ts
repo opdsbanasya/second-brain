@@ -10,17 +10,12 @@ export const sanitizeSearchQuery = (
   next: NextFunction,
 ) => {
   try {
-    const rawQuery = ((req.query.query || req.query.q) as string)?.trim();
-    
-    if (!rawQuery && typeof rawQuery !== "string")
-      return res.status(400).json({ message: "Query is required" });
+    const rawQuery = ((req.query.query || req.query.q) as string)?.trim() || "";
 
     if (rawQuery.length > 100)
       return res.status(400).json({ message: "Query is too long" });
 
     const query = escapeRegex(rawQuery);
-
-    if (!query) return res.status(400).json({ message: "Query is required" });
 
     req.rawQuery = query;
     next();
