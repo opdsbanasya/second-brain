@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { restoreSession } from "@/store/slices/authSlice";
 import api from "@/lib/api";
+import { Link } from "react-router";
 
 type SettingsTab = "profile" | "password" | "settings";
 
@@ -441,13 +442,18 @@ export default function ProfilePage() {
                   <pre className="rounded-xl border border-[#E2E8F0] bg-[#0F172A] p-4 text-xs font-mono text-slate-200 overflow-x-auto">
 {`"second-brain": {
   "command": "node",
-  "args": ["d:/Web Dev/second-brain/mcp/dist/index.js"],
+  "args": ["../second-brain/mcp/dist/index.js"],
   "env": {
     "SECOND_BRAIN_API_KEY": "<YOUR_TOKEN_HERE>",
     "SECOND_BRAIN_API_URL": "http://localhost:3000/api/v1/"
   }
 }`}
                   </pre>
+                </div>
+
+                {/* GitHub */}
+                <div>
+                  <p>Follow the steps on <Link to="https://github.com/opdsbanasya/second-brain" target="_blank">GitHub</Link> to connect your GitHub repositories.</p>
                 </div>
               </div>
             )}

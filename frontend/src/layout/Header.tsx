@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, Brain, LogOut, Search, User } from "lucide-react";
+import { Bell, Brain, LogOut, Search, User, Globe } from "lucide-react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -114,9 +114,21 @@ const Header = () => {
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel>{user?.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="md:hidden">
+                  <Link to="/dashboard">
+                    <Brain className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="md:hidden">
+                  <Link to="/shared-links">
+                    <Globe className="mr-2 h-4 w-4" />
+                    Shared Links
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/profile">
-                    <User />
+                    <User className="mr-2 h-4 w-4" />
                     Profile
                   </Link>
                 </DropdownMenuItem>

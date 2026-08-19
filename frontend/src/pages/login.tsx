@@ -60,7 +60,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen w-full bg-white text-neutral-900 font-sans selection:bg-[#4F46E5]/10 selection:text-[#4F46E5]">
       {/* LEFT SIDE: Brand & Clean Product Showcase (Linear / Raycast Vibe) */}
-      <div className="hidden lg:flex w-1/2 flex-col justify-between p-12 lg:p-16 bg-[#090D16] text-white relative overflow-hidden">
+      <div className="hidden md:flex w-1/2 flex-col justify-between p-8 lg:p-12 xl:p-16 bg-[#090D16] text-white relative overflow-hidden">
         {/* Subtle grid background pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-40 pointer-events-none" />
 
@@ -147,9 +147,9 @@ export default function LoginPage() {
       </div>
 
       {/* RIGHT SIDE: Auth Form (Linear / Stripe Vibe) */}
-      <div className="flex w-full lg:w-1/2 flex-col justify-between p-6 sm:p-12 lg:p-16 relative bg-white">
+      <div className="flex w-full md:w-1/2 flex-col justify-between p-6 sm:p-12 lg:p-16 relative bg-white">
         {/* Mobile Header Logo */}
-        <div className="lg:hidden flex items-center justify-between w-full mb-8">
+        <div className="md:hidden flex items-center justify-between w-full mb-8">
           <Link to="/" className="flex items-center gap-2 font-bold text-lg text-neutral-900">
             <div className="flex h-8 w-8 items-center justify-center rounded-2xl bg-[#4F46E5] text-white">
               <Brain className="h-4 w-4" />
@@ -285,7 +285,7 @@ export default function LoginPage() {
               <img className="inline-block h-7 w-7 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="User" />
             </div>
             <p className="text-[11px] leading-tight text-neutral-500 font-medium">
-              Trusted by developers & researchers. <span className="text-neutral-900 font-semibold">12k+ notes saved</span>
+              Trusted by developers & researchers. <span className="text-neutral-900 font-semibold hidden">12k+ notes saved</span>
             </p>
           </div>
         </div>

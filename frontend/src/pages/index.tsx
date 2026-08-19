@@ -14,35 +14,37 @@ import {
   Terminal,
   ExternalLink,
   BookOpen,
-  Sparkles
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function LandingPage() {
-  const [activeTab, setActiveTab] = useState<"search" | "tags" | "notes" | "mcp">("search");
+  const [activeTab, setActiveTab] = useState<
+    "search" | "tags" | "notes" | "mcp"
+  >("search");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const faqs = [
     {
       q: "How does Second Brain connect to Claude Desktop or Cursor?",
-      a: "Second Brain runs a local or remote Model Context Protocol (MCP) server. You add a simple 5-line configuration block to your Claude Desktop config (claude_desktop_config.json) or Cursor settings with your Personal Access Token, and your AI tools automatically gain access to tools like search_content and add_note."
+      a: "Second Brain runs a local or remote Model Context Protocol (MCP) server. You add a simple 5-line configuration block to your Claude Desktop config (claude_desktop_config.json) or Cursor settings with your Personal Access Token, and your AI tools automatically gain access to tools like search_content and add_note.",
     },
     {
       q: "Is my personal knowledge archive secure and private?",
-      a: "Yes. Your archive is private by default. Access to your REST API and MCP endpoints is protected by HTTP-only authentication and Personal Access Tokens (PATs). No third-party training is performed on your data."
+      a: "Yes. Your archive is private by default. Access to your REST API and MCP endpoints is protected by HTTP-only authentication and Personal Access Tokens (PATs). No third-party training is performed on your data.",
     },
     {
       q: "Can I share specific notes without exposing my full database?",
-      a: "Absolutely. Every note, article, or bookmark can generate a unique public share link. You can view all active share links in your dashboard and revoke any link instantly with a single click."
+      a: "Absolutely. Every note, article, or bookmark can generate a unique public share link. You can view all active share links in your dashboard and revoke any link instantly with a single click.",
     },
     {
       q: "What types of content can I save in Second Brain?",
-      a: "You can save rich markdown notes, web bookmarks, articles, code snippets, videos, podcasts, and documents. All items can be indexed with custom tags."
+      a: "You can save rich markdown notes, web bookmarks, articles, code snippets, videos, podcasts, and documents. All items can be indexed with custom tags.",
     },
     {
       q: "What is Model Context Protocol (MCP)?",
-      a: "MCP is an open standard developed by Anthropic that allows AI models to read from and write to external tools and databases safely. Second Brain provides native MCP support out of the box."
-    }
+      a: "MCP is an open standard developed by Anthropic that allows AI models to read from and write to external tools and databases safely. Second Brain provides native MCP support out of the box.",
+    },
   ];
 
   return (
@@ -66,7 +68,9 @@ export default function LandingPage() {
             </h1>
 
             <p className="max-w-xl text-lg text-[#64748B] sm:text-xl font-normal leading-relaxed mb-10">
-              A central memory for your notes, articles, and bookmarks. Instantly searchable and seamlessly connected to your AI tools via Model Context Protocol.
+              A central memory for your notes, articles, and bookmarks.
+              Instantly searchable and seamlessly connected to your AI tools via
+              Model Context Protocol.
             </p>
 
             <div className="flex flex-wrap items-center gap-4">
@@ -97,7 +101,9 @@ export default function LandingPage() {
                 </div>
                 <div className="flex items-center gap-1.5 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 text-xs text-[#64748B]">
                   <Lock className="h-3 w-3 text-[#10B981]" />
-                  <span className="font-mono text-[11px]">secondbrain.app/dashboard</span>
+                  <span className="font-mono text-[11px]">
+                    secondbrain.iamdharm.me/dashboard
+                  </span>
                 </div>
                 <div className="w-12" />
               </div>
@@ -129,7 +135,8 @@ export default function LandingPage() {
                       MCP Protocol Architecture
                     </h4>
                     <p className="text-xs text-[#64748B] line-clamp-2 leading-relaxed">
-                      Stdio transport specs for local AI client tools including Claude Desktop & Cursor.
+                      Stdio transport specs for local AI client tools including
+                      Claude Desktop & Cursor.
                     </p>
                     <div className="flex gap-1.5 pt-1">
                       <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-[#0F172A]">
@@ -153,7 +160,8 @@ export default function LandingPage() {
                       Distributed Caching with Redis
                     </h4>
                     <p className="text-xs text-[#64748B] line-clamp-2 leading-relaxed">
-                      High performance cache invalidation strategies in Node.js microservices.
+                      High performance cache invalidation strategies in Node.js
+                      microservices.
                     </p>
                     <div className="flex gap-1.5 pt-1">
                       <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-[#0F172A]">
@@ -174,7 +182,10 @@ export default function LandingPage() {
       {/* ==========================================
           3. PRODUCT PROOF SECTION
       ========================================== */}
-      <section id="product-showcase" className="border-t border-[#E2E8F0] bg-white py-28 sm:py-36">
+      <section
+        id="product-showcase"
+        className="border-t border-[#E2E8F0] bg-white py-28 sm:py-36"
+      >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="max-w-3xl mb-16">
             <span className="text-xs font-bold uppercase tracking-widest text-[#4F46E5] block mb-3">
@@ -184,7 +195,8 @@ export default function LandingPage() {
               Your knowledge, organized by default.
             </h2>
             <p className="text-lg text-[#64748B] leading-relaxed">
-              Every note, article, and bookmark structured into a clean, searchable database.
+              Every note, article, and bookmark structured into a clean,
+              searchable database.
             </p>
           </div>
 
@@ -196,7 +208,7 @@ export default function LandingPage() {
                 { id: "search", label: "01. Search Engine", icon: Search },
                 { id: "tags", label: "02. Tag Taxonomy", icon: TagIcon },
                 { id: "notes", label: "03. Block Note Editor", icon: FileText },
-                { id: "mcp", label: "04. MCP AI Server", icon: Cpu }
+                { id: "mcp", label: "04. MCP AI Server", icon: Cpu },
               ].map((tab) => {
                 const Icon = tab.icon;
                 const active = activeTab === tab.id;
@@ -241,10 +253,16 @@ export default function LandingPage() {
                           MCP Tool Handlers & Stdio Transport
                         </h4>
                         <p className="text-xs text-[#64748B] mt-1">
-                          Matched query <mark className="bg-yellow-100 text-yellow-900 px-1 rounded">MCP Protocol</mark> in title and description.
+                          Matched query{" "}
+                          <mark className="bg-yellow-100 text-yellow-900 px-1 rounded">
+                            MCP Protocol
+                          </mark>{" "}
+                          in title and description.
                         </p>
                       </div>
-                      <span className="text-xs font-mono text-[#64748B]">#mcp</span>
+                      <span className="text-xs font-mono text-[#64748B]">
+                        #mcp
+                      </span>
                     </div>
 
                     <div className="rounded-lg border border-[#E2E8F0] bg-white p-4 flex items-center justify-between">
@@ -256,7 +274,9 @@ export default function LandingPage() {
                           Schema validation with Zod and TypeScript handlers.
                         </p>
                       </div>
-                      <span className="text-xs font-mono text-[#64748B]">#typescript</span>
+                      <span className="text-xs font-mono text-[#64748B]">
+                        #typescript
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -268,23 +288,33 @@ export default function LandingPage() {
                     Automated Tag Taxonomy
                   </h3>
                   <p className="text-sm text-[#64748B]">
-                    Organize your knowledge base effortlessly using lightweight, indexed tags. Filter your entire second brain in a single click.
+                    Organize your knowledge base effortlessly using lightweight,
+                    indexed tags. Filter your entire second brain in a single
+                    click.
                   </p>
                   <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                    {["#mcp", "#backend", "#architecture", "#typescript", "#react", "#system-design", "#redis", "#database", "#ai-agents"].map(
-                      (tag, i) => (
-                        <span
-                          key={tag}
-                          className={`px-4 py-2 rounded-lg border text-xs font-mono font-semibold transition-colors cursor-pointer ${
-                            i === 0
-                              ? "border-[#4F46E5] bg-[#4F46E5] text-white"
-                              : "border-[#E2E8F0] bg-white text-[#0F172A] hover:border-[#4F46E5]/40"
-                          }`}
-                        >
-                          {tag}
-                        </span>
-                      )
-                    )}
+                    {[
+                      "#mcp",
+                      "#backend",
+                      "#architecture",
+                      "#typescript",
+                      "#react",
+                      "#system-design",
+                      "#redis",
+                      "#database",
+                      "#ai-agents",
+                    ].map((tag, i) => (
+                      <span
+                        key={tag}
+                        className={`px-4 py-2 rounded-lg border text-xs font-mono font-semibold transition-colors cursor-pointer ${
+                          i === 0
+                            ? "border-[#4F46E5] bg-[#4F46E5] text-white"
+                            : "border-[#E2E8F0] bg-white text-[#0F172A] hover:border-[#4F46E5]/40"
+                        }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
                 </div>
               )}
@@ -292,14 +322,18 @@ export default function LandingPage() {
               {activeTab === "notes" && (
                 <div className="max-w-3xl mx-auto w-full rounded-lg border border-[#E2E8F0] bg-white p-6 shadow-xs space-y-4">
                   <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3 text-xs text-[#64748B]">
-                    <span className="font-mono text-emerald-600 font-semibold uppercase">● Live BlockNote Editor</span>
+                    <span className="font-mono text-emerald-600 font-semibold uppercase">
+                      ● Live BlockNote Editor
+                    </span>
                     <span>Saved 5 minutes ago</span>
                   </div>
                   <h3 className="font-heading font-extrabold text-xl text-[#0F172A]">
                     Distributed Caching Strategy
                   </h3>
                   <p className="text-sm text-[#64748B] leading-relaxed">
-                    Redis acts as an in-memory data structure store used as a database, cache, and message broker. Use cache-aside pattern to reduce database query load by 85%.
+                    Redis acts as an in-memory data structure store used as a
+                    database, cache, and message broker. Use cache-aside pattern
+                    to reduce database query load by 85%.
                   </p>
                 </div>
               )}
@@ -314,7 +348,7 @@ export default function LandingPage() {
                     <span className="text-[#10B981]">Status: Connected</span>
                   </div>
                   <pre className="text-slate-300 overflow-x-auto leading-relaxed pt-2">
-{`{
+                    {`{
   "jsonrpc": "2.0",
   "method": "tools/call",
   "params": {
@@ -354,7 +388,8 @@ export default function LandingPage() {
                 Capture
               </h3>
               <p className="text-base text-[#64748B] leading-relaxed">
-                Save notes, articles, links and resources in a clean, distraction-free environment.
+                Save notes, articles, links and resources in a clean,
+                distraction-free environment.
               </p>
             </div>
 
@@ -367,7 +402,8 @@ export default function LandingPage() {
                 Organize
               </h3>
               <p className="text-base text-[#64748B] leading-relaxed">
-                Tag and structure information effortlessly with instant indexing and custom taxonomies.
+                Tag and structure information effortlessly with instant indexing
+                and custom taxonomies.
               </p>
             </div>
 
@@ -380,7 +416,8 @@ export default function LandingPage() {
                 Retrieve
               </h3>
               <p className="text-base text-[#64748B] leading-relaxed">
-                Find anything instantly using high-speed search across all your saved knowledge.
+                Find anything instantly using high-speed search across all your
+                saved knowledge.
               </p>
             </div>
           </div>
@@ -390,7 +427,10 @@ export default function LandingPage() {
       {/* ==========================================
           5. AI + MCP SECTION
       ========================================== */}
-      <section id="mcp" className="border-t border-[#E2E8F0] bg-white py-28 sm:py-36">
+      <section
+        id="mcp"
+        className="border-t border-[#E2E8F0] bg-white py-28 sm:py-36"
+      >
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="max-w-3xl mb-16">
             <span className="text-xs font-bold uppercase tracking-widest text-[#4F46E5] block mb-3">
@@ -400,7 +440,9 @@ export default function LandingPage() {
               Your knowledge becomes AI-ready.
             </h2>
             <p className="text-lg text-[#64748B] leading-relaxed">
-              Expose your Second Brain to external AI tools using the open Model Context Protocol. Allow Claude, Cursor, and ChatGPT to search and synthesize your personal notes.
+              Expose your Second Brain to external AI tools using the open Model
+              Context Protocol. Allow Claude, Cursor, and ChatGPT to search and
+              synthesize your personal notes.
             </p>
           </div>
 
@@ -413,7 +455,12 @@ export default function LandingPage() {
                   01. AI Clients
                 </div>
                 <div className="space-y-2.5">
-                  {["Claude Desktop", "Cursor IDE", "ChatGPT", "VS Code Extension"].map((client) => (
+                  {[
+                    "Claude Desktop",
+                    "Cursor IDE",
+                    "ChatGPT",
+                    "VS Code Extension",
+                  ].map((client) => (
                     <div
                       key={client}
                       className="flex items-center justify-between rounded-md border border-[#E2E8F0] bg-white px-3.5 py-2 text-sm font-semibold text-[#0F172A]"
@@ -435,7 +482,8 @@ export default function LandingPage() {
                     Tools: search_content, add_note, get_tags
                   </div>
                   <div className="rounded border border-[#E2E8F0] bg-slate-50 p-2 font-semibold">
-                    Resources: secondbrain://tags, secondbrain://content/{`{id}`}
+                    Resources: secondbrain://tags, secondbrain://content/
+                    {`{id}`}
                   </div>
                   <div className="rounded border border-[#E2E8F0] bg-slate-50 p-2 font-semibold">
                     Prompts: summarize_recent, brainstorm_ideas
@@ -484,32 +532,48 @@ export default function LandingPage() {
             {/* Quote 1 */}
             <div className="rounded-xl border border-[#E2E8F0] bg-white p-8 flex flex-col justify-between">
               <p className="text-base text-[#0F172A] leading-relaxed font-normal mb-8">
-                "Second Brain has completely replaced my fragmented bookmark apps and chaotic local files. Having all my notes instantly searchable from both my browser and Claude Desktop via MCP is a game-changer."
+                "Second Brain has completely replaced my fragmented bookmark
+                apps and chaotic local files. Having all my notes instantly
+                searchable from both my browser and Claude Desktop via MCP is a
+                game-changer."
               </p>
               <div>
-                <h4 className="font-heading font-bold text-sm text-[#0F172A]">Sarah Chen</h4>
-                <p className="text-xs text-[#64748B]">Staff Engineer at Stripe</p>
+                <h4 className="font-heading font-bold text-sm text-[#0F172A]">
+                  Sarah Chen
+                </h4>
+                <p className="text-xs text-[#64748B]">
+                  Staff Engineer at Stripe
+                </p>
               </div>
             </div>
 
             {/* Quote 2 */}
             <div className="rounded-xl border border-[#E2E8F0] bg-white p-8 flex flex-col justify-between">
               <p className="text-base text-[#0F172A] leading-relaxed font-normal mb-8">
-                "The interface is fast, quiet, and deliberate. It feels like software built for professionals who value focus over clutter."
+                "The interface is fast, quiet, and deliberate. It feels like
+                software built for professionals who value focus over clutter."
               </p>
               <div>
-                <h4 className="font-heading font-bold text-sm text-[#0F172A]">Marcus Vance</h4>
-                <p className="text-xs text-[#64748B]">Principal Designer at Linear</p>
+                <h4 className="font-heading font-bold text-sm text-[#0F172A]">
+                  Marcus Vance
+                </h4>
+                <p className="text-xs text-[#64748B]">
+                  Principal Designer at Linear
+                </p>
               </div>
             </div>
 
             {/* Quote 3 */}
             <div className="rounded-xl border border-[#E2E8F0] bg-white p-8 flex flex-col justify-between">
               <p className="text-base text-[#0F172A] leading-relaxed font-normal mb-8">
-                "The MCP integration turns Second Brain into an extension of my AI workflow in Cursor. It's the cleanest knowledge base I've used."
+                "The MCP integration turns Second Brain into an extension of my
+                AI workflow in Cursor. It's the cleanest knowledge base I've
+                used."
               </p>
               <div>
-                <h4 className="font-heading font-bold text-sm text-[#0F172A]">David K.</h4>
+                <h4 className="font-heading font-bold text-sm text-[#0F172A]">
+                  David K.
+                </h4>
                 <p className="text-xs text-[#64748B]">Founder & Tech Lead</p>
               </div>
             </div>
@@ -592,7 +656,9 @@ export default function LandingPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#0F172A] text-white">
-                  <span className="font-heading font-extrabold text-sm tracking-tight">2B</span>
+                  <span className="font-heading font-extrabold text-sm tracking-tight">
+                    2B
+                  </span>
                 </div>
                 <span className="font-heading font-bold text-base tracking-tight text-[#0F172A]">
                   Second Brain
@@ -602,7 +668,8 @@ export default function LandingPage() {
                 Personal knowledge archive and AI-ready memory system.
               </p>
               <p className="text-xs text-[#94A3B8]">
-                © {new Date().getFullYear()} Second Brain Inc. All rights reserved.
+                © {new Date().getFullYear()} Second Brain Inc. All rights
+                reserved.
               </p>
             </div>
 
@@ -612,10 +679,31 @@ export default function LandingPage() {
                 Product
               </h4>
               <ul className="space-y-2 text-sm text-[#64748B]">
-                <li><Link to="/dashboard" className="hover:text-[#0F172A] transition-colors">Dashboard</Link></li>
-                <li><Link to="/shared-links" className="hover:text-[#0F172A] transition-colors">Shared Links</Link></li>
-                <li><a href="#mcp" className="hover:text-[#0F172A] transition-colors">MCP Integration</a></li>
-                <li><a href="#pricing" className="hover:text-[#0F172A] transition-colors">Pricing</a></li>
+                <li>
+                  <Link
+                    to="/dashboard"
+                    className="hover:text-[#0F172A] transition-colors"
+                  >
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/shared-links"
+                    className="hover:text-[#0F172A] transition-colors"
+                  >
+                    Shared Links
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="#mcp"
+                    className="hover:text-[#0F172A] transition-colors"
+                  >
+                    MCP Integration
+                  </a>
+                </li>
+                
               </ul>
             </div>
 
@@ -625,10 +713,35 @@ export default function LandingPage() {
                 Developers
               </h4>
               <ul className="space-y-2 text-sm text-[#64748B]">
-                <li><a href="https://modelcontextprotocol.io" target="_blank" rel="noreferrer" className="hover:text-[#0F172A] transition-colors inline-flex items-center gap-1">MCP Specification <ExternalLink className="h-3 w-3" /></a></li>
-                <li><a href="#mcp" className="hover:text-[#0F172A] transition-colors">API Reference</a></li>
-                <li><a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[#0F172A] transition-colors">GitHub Repository</a></li>
-                <li><span className="inline-flex items-center gap-1.5 text-xs text-emerald-600 font-medium"><span className="h-2 w-2 rounded-full bg-emerald-500" /> Systems Operational</span></li>
+                <li>
+                  <a
+                    href="https://modelcontextprotocol.io"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-[#0F172A] transition-colors inline-flex items-center gap-1"
+                  >
+                    MCP Specification <ExternalLink className="h-3 w-3" />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#mcp"
+                    className="hover:text-[#0F172A] transition-colors"
+                  >
+                    API Reference
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/opdsbanasya/second-brain"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-[#0F172A] transition-colors"
+                  >
+                    GitHub Repository
+                  </a>
+                </li>
+
               </ul>
             </div>
 
@@ -638,10 +751,38 @@ export default function LandingPage() {
                 Legal & Support
               </h4>
               <ul className="space-y-2 text-sm text-[#64748B]">
-                <li><Link to="/privacy" className="hover:text-[#0F172A] transition-colors">Privacy Policy</Link></li>
-                <li><Link to="/privacy" className="hover:text-[#0F172A] transition-colors">Terms of Service</Link></li>
-                <li><Link to="/contact" className="hover:text-[#0F172A] transition-colors">Security & Trust</Link></li>
-                <li><Link to="/contact" className="hover:text-[#0F172A] transition-colors">Contact Support</Link></li>
+                <li>
+                  <Link
+                    to="/privacy"
+                    className="hover:text-[#0F172A] transition-colors"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/privacy"
+                    className="hover:text-[#0F172A] transition-colors"
+                  >
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/contact"
+                    className="hover:text-[#0F172A] transition-colors"
+                  >
+                    Security & Trust
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/contact"
+                    className="hover:text-[#0F172A] transition-colors"
+                  >
+                    Contact Support
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

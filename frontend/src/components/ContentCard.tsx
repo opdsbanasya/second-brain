@@ -69,7 +69,7 @@ export function ContentCard({
 
   // Render Visually Distinct Card Styles Based on ContentType
   return (
-    <article className="group flex break-inside-avoid flex-col rounded-xl border border-[#E2E8F0] bg-white p-5 transition-all hover:border-[#4F46E5]/40 hover:shadow-xs">
+    <article className="group flex break-inside-avoid flex-col rounded-xl border border-[#E2E8F0] bg-white p-4 sm:p-5 transition-all hover:border-[#4F46E5]/40 hover:shadow-xs">
       {/* Header Row: Type Badge & Action Menu */}
       <div className="mb-3 flex items-center justify-between">
         {item.type === "article" && (

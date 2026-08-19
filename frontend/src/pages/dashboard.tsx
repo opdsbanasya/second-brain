@@ -97,7 +97,7 @@ export function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-white text-[#0F172A] font-sans antialiased selection:bg-[#4F46E5]/10 selection:text-[#4F46E5]">
-      <div className="mx-auto flex max-w-[1600px] gap-8 px-4 py-8 sm:px-8 sm:py-10">
+      <div className="mx-auto flex flex-col lg:flex-row max-w-[1600px] gap-6 lg:gap-8 px-4 py-6 sm:px-8 sm:py-10">
         {/* Left Sidebar Navigation */}
         <TagSidebar
           tags={tags}

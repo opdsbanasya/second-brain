@@ -40,7 +40,7 @@ const sections = [
   },
   {
     title: "9. Contact",
-    body: "Questions? Email privacy@secondbrain.app and a real human will reply.",
+    body: "Questions? Email dharm.s.dev@gmail.com and a real human will reply.",
   },
 ];
 
@@ -56,7 +56,7 @@ function PrivacyPage() {
           Privacy policy
         </h1>
         <p className="mt-3 text-sm text-muted-foreground">
-          Last updated: June 16, 2026
+          Last updated: August 01, 2026
         </p>
 
         <p className="mt-8 text-base leading-relaxed text-muted-foreground">

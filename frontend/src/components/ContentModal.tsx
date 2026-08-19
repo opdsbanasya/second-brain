@@ -21,10 +21,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { type ContentItem } from "@/lib/data";
-import { BlockNoteView } from "@blocknote/shadcn";
-import { useCreateBlockNote } from "@blocknote/react";
-import "@blocknote/core/fonts/inter.css";
-import "@blocknote/shadcn/style.css";
 
 export interface ContentDraft {
   id: string;
@@ -55,7 +51,6 @@ export function ContentModal({
   const isEditing = Boolean(draft.id);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
-  const editor = useCreateBlockNote();
 
   useEffect(() => {
     if (!open) return;
@@ -75,16 +70,6 @@ export function ContentModal({
       tags: tags.join(", "),
     }));
   }, [setDraft, tags]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const blocks = draft.description.trim()
-      ? editor.tryParseMarkdownToBlocks(draft.description)
-      : [{ type: "paragraph" as const }];
-
-    editor.replaceBlocks(editor.document, blocks);
-  }, [draft.id, editor, open]);
 
   const commitTag = (value: string) => {
     const normalized = value.trim();
@@ -133,11 +118,10 @@ export function ContentModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="glass flex h-[calc(100vh-2rem)] w-[calc(100vw-1rem)] max-w-6xl flex-col overflow-hidden bg-card/95 p-0 text-card-foreground shadow-[0_30px_120px_rgba(0,0,0,0.18)] sm:h-[calc(100vh-3rem)] sm:w-[calc(100vw-2rem)] sm:rounded-3xl">
-        <div className="relative flex h-full flex-1 flex-col p-4 sm:p-5">
-          <div className="grid flex-1 gap-4 overflow-hidden lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+      <DialogContent className="glass flex max-h-[calc(100vh-2rem)] w-[calc(100vw-1rem)] max-w-xl flex-col overflow-hidden bg-card/95 p-0 text-card-foreground shadow-[0_30px_120px_rgba(0,0,0,0.18)] sm:rounded-3xl">
+        <div className="relative flex max-h-full flex-col p-4 sm:p-5 overflow-y-auto">
             <form
-              className="flex min-h-0 flex-col rounded-2xl border border-border bg-background/70 p-4 sm:p-5"
+              className="flex flex-col rounded-2xl border border-border bg-background/70 p-4 sm:p-5"
               onSubmit={onSubmit}
             >
               <DialogHeader className="mb-4 items-start space-y-2 text-left">
@@ -270,43 +254,6 @@ export function ContentModal({
                 </DialogFooter>
               </div>
             </form>
-
-            <section className="flex min-h-0 flex-col rounded-2xl border border-border bg-background/70 p-4 sm:p-5">
-              <div className="flex min-h-0 flex-1 flex-col space-y-3 rounded-2xl border border-border bg-card p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h4 className="text-sm font-medium text-foreground">
-                      Description
-                    </h4>
-                    <p className="text-xs text-muted-foreground">
-                      Enter description
-                    </p>
-                  </div>
-                  <div className="hidden rounded-full border border-border px-3 py-1 text-xs text-muted-foreground sm:block">
-                    Markdown ready
-                  </div>
-                </div>
-
-                <div className="flex min-h-0 flex-1 overflow-hidden rounded-xl border border-input bg-background">
-                  <BlockNoteView
-                    editor={editor}
-                    theme="light"
-                    editable
-                    shadCNComponents={{}}
-                    onChange={(nextEditor) => {
-                      setDraft((current) => ({
-                        ...current,
-                        description: nextEditor.blocksToMarkdownLossy(
-                          nextEditor.document,
-                        ),
-                      }));
-                    }}
-                    className="bn-editor-scroll h-full min-h-112 flex-1 overflow-y-auto"
-                  />
-                </div>
-              </div>
-            </section>
-          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router";
 import { useAppDispatch } from "@/store/hooks";
 import { createShareLink } from "@/store/slices/shareSlice";
 import { createContent, updateContent, deleteContent } from "@/store/slices/contentSlice";
@@ -7,7 +8,8 @@ import { toast } from "sonner";
 import { type ContentItem } from "@/lib/data";
 import { type ContentDraft } from "@/components/ContentModal";
 
-export function useContentActions(onSuccess?: () => void) {
+export function useContentActions(onSuccess?: (id?: string) => void) {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [createOpen, setCreateOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -72,14 +74,18 @@ export function useContentActions(onSuccess?: () => void) {
 
       if (draft.id) {
         await dispatch(updateContent({ id: draft.id, data: payload })).unwrap();
+        await dispatch(fetchTags("")).unwrap();
+        setCreateOpen(false);
+        toast.success("Content updated");
+        if (onSuccess) onSuccess();
       } else {
-        await dispatch(createContent(payload)).unwrap();
+        const newItem = await dispatch(createContent(payload)).unwrap();
+        await dispatch(fetchTags("")).unwrap();
+        setCreateOpen(false);
+        toast.success("Content saved");
+        navigate(`/content/${newItem.id}`);
+        if (onSuccess) onSuccess(newItem.id);
       }
-
-      await dispatch(fetchTags("")).unwrap();
-      setCreateOpen(false);
-      toast.success(draft.id ? "Content updated" : "Content saved");
-      if (onSuccess) onSuccess();
     } catch (error) {
       toast.error("Could not save content", { description: String(error) });
     } finally {
