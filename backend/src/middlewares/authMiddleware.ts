@@ -23,7 +23,8 @@ const authMiddleware = async (req: Request, res: Response, next: NextFunction) =
       ? authorization.slice(7)
       : undefined;
     const token = req.cookies.token || bearerToken;
-
+  console.log("Cookies:", req.cookies);
+  console.log("Headers Cookie:", req.headers.cookie);
     // Check if the token exists
     if(!token) {
         return res.status(401).json({ message: "Unauthorized!" });

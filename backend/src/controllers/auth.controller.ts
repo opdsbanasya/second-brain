@@ -17,7 +17,7 @@ const setSessionCookie = (
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     maxAge: 2 * 24 * 60 * 60 * 1000,
   });
 };
@@ -93,7 +93,7 @@ export const logoutUser = (req: Request, res: Response) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       secure: process.env.NODE_ENV === "production",
     });
     res.status(200).json({ message: "Logout successful" });

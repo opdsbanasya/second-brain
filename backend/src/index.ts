@@ -31,6 +31,10 @@ app.use(express.json());
 app.use("/api", apiLimiter);
 
 const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+if(!clientUrl){
+  console.error("CLIENT_URL is not defined");
+  process.exit(1);
+}
 
 app.use(
   cors({
