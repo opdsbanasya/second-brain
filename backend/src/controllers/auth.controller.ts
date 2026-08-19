@@ -11,13 +11,15 @@ const setSessionCookie = (
 ) => {
   const secretKey = process.env.JWT_SECRET;
   if (!secretKey) throw new Error("JWT_SECRET is not configured");
+
   const token = jwt.sign({ _id: user._id, email: user.email }, secretKey, {
     expiresIn: 2 * 24 * 60 * 60,
   });
+  
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    secure: process.env.NODE_ENV !== "local",
+    sameSite: process.env.NODE_ENV !== "local" ? "none" : "strict",
     maxAge: 2 * 24 * 60 * 60 * 1000,
   });
 };
@@ -93,8 +95,8 @@ export const logoutUser = (req: Request, res: Response) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV !== "local" ? "none" : "strict",
+      secure: process.env.NODE_ENV !== "local",
     });
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {

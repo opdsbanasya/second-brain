@@ -16,6 +16,8 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+app.set("trust proxy", 1);
+
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
