@@ -385,7 +385,7 @@ export default function ProfilePage() {
                           <div>
                             <p className="font-heading font-bold text-sm text-[#0F172A]">{key.name}</p>
                             <p className="font-mono text-xs text-[#64748B] mt-0.5">
-                              ••••••••••••{key.key.slice(-4)}
+                              {key.shortKey ? `••••••••••••${key.shortKey.slice(-4)}` : '••••••••••••••••'}
                             </p>
                             <p className="text-[10px] text-[#94A3B8] mt-1">
                               Created: {new Date(key.createdAt).toLocaleDateString()}

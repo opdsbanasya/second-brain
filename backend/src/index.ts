@@ -8,8 +8,8 @@ import shareRoute from "./routes/share.routes.js";
 import userRoute from "./routes/user.routes.js";
 import cookieParser from "cookie-parser";
 import apiKey from "./routes/apiKeys.route.js";
-import rateLimit from "express-rate-limit";
 import cors from "cors";
+import { apiLimiter, authLimiter } from "./utils/rateLimiter.js";
 
 dotenv.config();
 
@@ -18,19 +18,11 @@ const app = express();
 
 app.set("trust proxy", 1);
 
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  message: { message: "Too many requests, please try again later." },
-});
-
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({limit: "10mb"}));
 
 // Apply rate limiter to all API routes
-app.use("/api", apiLimiter);
+app.use("/api", apiLimiter);  
 
 const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
 if(!clientUrl){
@@ -46,7 +38,7 @@ app.use(
   }),
 );
 
-app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/auth", authLimiter, authRoute);
 app.use("/api/v1/content", contentRoute);
 app.use("/api/v1/tags", tagRoute);
 app.use("/api/v1/shared-links", shareRoute);

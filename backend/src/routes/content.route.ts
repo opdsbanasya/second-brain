@@ -10,15 +10,17 @@ import {
 } from "../controllers/content.controller.js";
 import { sanitizeSearchQuery } from "../middlewares/searchQuery.js";
 
+import { contentvalidator } from "../middlewares/contentValidator.js";
+
 const contentRoute: express.Router = express.Router();
 
 contentRoute.use(authMiddleware);
 
-contentRoute.post("/", createContent);
+contentRoute.post("/", contentvalidator, createContent);
 contentRoute.get("/", getAllContents);
 contentRoute.get("/search", sanitizeSearchQuery, searchContent);
 contentRoute.get("/:id", getContentById);
-contentRoute.put("/:id", updateContentById);
+contentRoute.put("/:id", contentvalidator, updateContentById);
 contentRoute.delete("/:id", deleteContentById);
 
 export default contentRoute;

@@ -7,8 +7,12 @@ export const TagsSchema = new mongoose.Schema<TagsTypes>({
         required: true,
         unique: true,
         lowercase: true
-    }
-})
+    },
+    useCount: {
+        type: Number,
+        default: 0,
+    },
+});
 
 const Tags = mongoose.model("Tags", TagsSchema);
 

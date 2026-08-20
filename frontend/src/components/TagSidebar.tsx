@@ -20,6 +20,15 @@ export function TagSidebar({
   counts,
   total,
 }: TagSidebarProps) {
+  const displayTags = [...tags]
+    .sort((a, b) => {
+      const countA = counts[a.name] ?? 0;
+      const countB = counts[b.name] ?? 0;
+      if (countB !== countA) return countB - countA;
+      return a.name.localeCompare(b.name);
+    })
+    .slice(0, 15);
+
   return (
     <>
       {/* Mobile/Tablet Horizontal Tag Navigation */}
@@ -56,12 +65,12 @@ export function TagSidebar({
           
           <div className="h-4 w-px bg-slate-300 mx-1"></div>
 
-          {tags.map((t) => {
-            const active = activeTagId === t.id;
+          {displayTags.map((t) => {
+            const active = activeTagId === t.name;
             return (
               <button
                 key={t.id}
-                onClick={() => onSelect(t.id)}
+                onClick={() => onSelect(t.name)}
                 className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
                   active
                     ? "bg-[#4F46E5] text-white shadow-xs"
@@ -126,16 +135,16 @@ export function TagSidebar({
           <div>
             <div className="mb-2 flex items-center justify-between px-3 text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">
               <span>Tags</span>
-              <span className="font-mono text-[10px] text-[#94A3B8]">{tags.length}</span>
+              <span className="font-mono text-[10px] text-[#94A3B8]">{displayTags.length}</span>
             </div>
 
             <div className="space-y-0.5 max-h-[calc(100vh-22rem)] overflow-y-auto pr-1">
-              {tags.map((t) => {
-                const active = activeTagId === t.id;
+              {displayTags.map((t) => {
+                const active = activeTagId === t.name;
                 return (
                   <button
                     key={t.id}
-                    onClick={() => onSelect(t.id)}
+                    onClick={() => onSelect(t.name)}
                     className={`flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       active
                         ? "bg-[#4F46E5] text-white font-semibold shadow-xs"
@@ -147,7 +156,7 @@ export function TagSidebar({
                       <span className="truncate">{t.name}</span>
                     </span>
                     <span className={`text-xs font-mono ${active ? "text-white" : "text-[#94A3B8]"}`}>
-                      {counts[t.id] ?? 0}
+                      {counts[t.name] ?? 0}
                     </span>
                   </button>
                 );

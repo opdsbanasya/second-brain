@@ -7,6 +7,7 @@ export interface Tag {
   id: string;
   name: string;
   color: "blue" | "green" | "pink" | "amber" | "violet" | "rose" | "teal" | "slate";
+  useCount?: number;
 }
 
 export interface ContentItem {

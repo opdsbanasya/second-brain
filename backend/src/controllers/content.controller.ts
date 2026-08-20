@@ -23,17 +23,28 @@ export const getAllContents = async (req: Request, res: Response) => {
 
 const checkAndCreateTags = async (tags: string[]) => {
   try {
-    // Check if tags exist in the database, if not create them
-    // Return the list of tag names (existing and newly created)
-
     for (const tagName of tags) {
-      const existingTag = await Tags.findOne({ name: tagName });
-      if (!existingTag) {
-        await Tags.create({ name: tagName });
-      }
+      await Tags.findOneAndUpdate(
+        { name: tagName.toLowerCase() },
+        { $inc: { useCount: 1 } },
+        { upsert: true, new: true }
+      );
     }
   } catch (error) {
     throw new Error("Failed to check and create tags");
+  }
+};
+
+const decrementTagsUsage = async (tags: string[]) => {
+  try {
+    for (const tagName of tags) {
+      await Tags.findOneAndUpdate(
+        { name: tagName.toLowerCase() },
+        { $inc: { useCount: -1 } }
+      );
+    }
+  } catch (error) {
+    console.error("Failed to decrement tags usage:", error);
   }
 };
 
@@ -70,8 +81,7 @@ export const createContent = async (req: Request, res: Response) => {
     // send response
     res.status(201).json({ content });
   } catch (error) {
-    console.error("Error creating content:", error);
-    res.status(500).json({ message: "Internal Server Error", error });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -123,7 +133,16 @@ export const updateContentById = async (req: Request, res: Response) => {
       description,
     }: Partial<ContentCreateBody> = req.body;
 
-    if (tags && tags.length > 0) await checkAndCreateTags(tags);
+    if (tags !== undefined) {
+      const oldTags = content.tags || [];
+      const newTags = tags;
+      
+      const addedTags = newTags.filter(t => !oldTags.includes(t));
+      const removedTags = oldTags.filter(t => !newTags.includes(t));
+
+      if (addedTags.length > 0) await checkAndCreateTags(addedTags);
+      if (removedTags.length > 0) await decrementTagsUsage(removedTags);
+    }
 
     const updates = Object.fromEntries(
       Object.entries({ title, link, contentType, tags, description }).filter(
@@ -156,6 +175,9 @@ export const deleteContentById = async (req: Request, res: Response) => {
     });
     if (!content) {
       return res.status(404).json({ message: "Content not found" });
+    }
+    if (content.tags && content.tags.length > 0) {
+      await decrementTagsUsage(content.tags);
     }
 
     await Content.findByIdAndDelete(content._id);

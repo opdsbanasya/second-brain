@@ -75,9 +75,9 @@ export function DashboardPage() {
   // Count tag occurrences
   const counts = useMemo(() => {
     const c: Record<string, number> = {};
-    for (const t of tags) c[t.id] = 0;
+    for (const t of tags) c[t.name] = 0;
     for (const item of contentItems) {
-      for (const id of item.tagIds) c[id] = (c[id] ?? 0) + 1;
+      for (const tagName of item.tagIds) c[tagName] = (c[tagName] ?? 0) + 1;
     }
     return c;
   }, [tags, contentItems]);
@@ -90,7 +90,7 @@ export function DashboardPage() {
       link: "",
       description: "",
       type: type,
-      tags: activeTagId ? tags.find((t) => t.id === activeTagId)?.name || "" : "",
+      tags: activeTagId ? activeTagId : "",
     });
     setCreateOpen(true);
   };
@@ -123,7 +123,7 @@ export function DashboardPage() {
             <div>
               <h1 className="font-heading font-extrabold text-3xl tracking-tight text-[#0F172A]">
                 {activeTagId
-                  ? `Tag: #${tags.find((t) => t.id === activeTagId)?.name}`
+                  ? `Tag: #${activeTagId}`
                   : activeFilter === "recent"
                   ? "Recent 5 Additions"
                   : "Knowledge Base"}
@@ -182,7 +182,7 @@ export function DashboardPage() {
                   {query
                     ? `No notes match "${query}". Try clearing your search term.`
                     : activeTagId
-                    ? `No notes tagged with #${tags.find((t) => t.id === activeTagId)?.name} yet.`
+                    ? `No notes tagged with #${activeTagId} yet.`
                     : "Save your first note, link, or article to build your memory database."}
                 </p>
               </div>

@@ -17,9 +17,11 @@ tagRoute.get("/", sanitizeSearchQuery, async (req, res) => {
         $options: "i",
       },
     })
-      .sort({ name: 1 })
+      .select("_id name")
+      .sort({ useCount: -1, name: 1 })
       .limit(10);
 
+    res.set("Cache-Control", "no-store");
     res.json({ tags });
   } catch (error) {
     console.error("Error fetching tags:", error);

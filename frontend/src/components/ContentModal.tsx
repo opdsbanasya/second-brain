@@ -7,6 +7,8 @@ import {
   type KeyboardEvent,
   type SetStateAction,
 } from "react";
+import { useAppSelector } from "@/store/hooks";
+import api from "@/lib/api";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { type ContentItem } from "@/lib/data";
+import { type ContentItem, type Tag } from "@/lib/data";
 
 export interface ContentDraft {
   id: string;
@@ -51,8 +53,30 @@ export function ContentModal({
   const isEditing = Boolean(draft.id);
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
+  const [matchingTags, setMatchingTags] = useState<Tag[]>([]);
 
   useEffect(() => {
+    if (!tagInput.trim()) {
+      setMatchingTags([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await api.get(`/tags?q=${tagInput}`);
+        const fetchedTags = res.data.tags.map((tag: any) => ({
+          id: tag._id || tag.name,
+          name: tag.name,
+          color: tag.color || "slate",
+        }));
+        setMatchingTags(fetchedTags.filter((t: any) => !tags.includes(t.name)).slice(0, 5));
+      } catch (err) {
+        console.error("Failed to fetch tags", err);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [tagInput, tags]);
+
+  useEffect(() => { 
     if (!open) return;
 
     const initialTags = draft.tags
@@ -226,7 +250,7 @@ export function ContentModal({
                       </button>
                     ))}
                   </div>
-                  <div className="w-full space-y-1">
+                  <div className="w-full space-y-1 relative">
                     <Input
                       id="content-tags"
                       placeholder="work, ideas"
@@ -239,6 +263,24 @@ export function ContentModal({
                       }}
                       className="h-12 bg-background text-base text-foreground placeholder:text-muted-foreground"
                     />
+                    {tagInput && matchingTags.length > 0 && (
+                      <div className="absolute top-full mt-1 w-full rounded-md border border-border bg-card p-1 shadow-lg z-10 max-h-48 overflow-y-auto">
+                        {matchingTags.map((t) => (
+                          <button
+                            key={t.id}
+                            type="button"
+                            className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-secondary rounded-sm transition-colors cursor-pointer"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              commitTag(t.name);
+                              setTagInput("");
+                            }}
+                          >
+                            {t.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 

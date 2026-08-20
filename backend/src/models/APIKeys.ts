@@ -22,6 +22,10 @@ const APIKeySchema = new Schema(
       type: Schema.Types.Mixed,
       default: {},
     },
+    shortKey: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,

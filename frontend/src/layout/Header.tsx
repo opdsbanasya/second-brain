@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { logout } from "../store/slices/authSlice";
+import { logoutUser } from "../store/slices/authSlice";
 import { searchContents, fetchContents } from "../store/slices/contentSlice";
 import api from "../lib/api";
 
@@ -62,7 +62,7 @@ const Header = () => {
     try {
       await api.post("/auth/logout");
     } finally {
-      dispatch(logout());
+      dispatch(logoutUser());
       navigate("/", { replace: true });
     }
   };

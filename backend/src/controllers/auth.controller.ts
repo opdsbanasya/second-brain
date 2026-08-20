@@ -12,15 +12,19 @@ const setSessionCookie = (
   const secretKey = process.env.JWT_SECRET;
   if (!secretKey) throw new Error("JWT_SECRET is not configured");
 
+  const expiresIn = process.env.JWT_EXPIRES_IN;
+
+  if(!expiresIn) return res.status(500).json({message: "internal server error"})
+
   const token = jwt.sign({ _id: user._id, email: user.email }, secretKey, {
-    expiresIn: 2 * 24 * 60 * 60,
+    expiresIn: Number(expiresIn),
   });
   
   res.cookie("token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== "local",
     sameSite: process.env.NODE_ENV !== "local" ? "none" : "strict",
-    maxAge: 2 * 24 * 60 * 60 * 1000,
+    maxAge: Number(expiresIn),
   });
 };
 
