@@ -200,12 +200,15 @@ export const searchContent = async (req: Request, res: Response) => {
         { description: { $regex: query, $options: "i" } },
         { tags: { $elemMatch: { $regex: query, $options: "i" } } },
       ],
-    }).populate("userId", "name email");
+    })
+      .populate("userId", "name email")
+      .maxTimeMS(2000)
+      .limit(100);
 
     // send
     res.json({ contents: results });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

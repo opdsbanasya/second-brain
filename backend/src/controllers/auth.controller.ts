@@ -43,6 +43,11 @@ export const registerUser = async (req: Request, res: Response) => {
       });
     }
 
+    const checkUser = await User.find({email: userBody.email.toLowerCase()})
+    if(checkUser.length > 0){
+      return res.status(400).json({message: "User already exists"})
+    }
+
     const hashedPassword = await bcrypt.hash(userBody.password, 10);
     userBody.password = hashedPassword;
 

@@ -37,7 +37,7 @@ export const createAPIKey = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -53,7 +53,7 @@ export const getAPIKey = async (req: Request, res: Response) => {
     // send
     res.json({ message: "API Keys Fetched Successfully!", apiKeys });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -81,7 +81,7 @@ export const deleteAPIKey = async (req: Request, res: Response) => {
     // send
     return res.json({ message: "API Key deleted successfully"});
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };

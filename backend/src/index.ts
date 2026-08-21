@@ -9,12 +9,15 @@ import userRoute from "./routes/user.routes.js";
 import cookieParser from "cookie-parser";
 import apiKey from "./routes/apiKeys.route.js";
 import cors from "cors";
+import helmet from "helmet";
 import { apiLimiter, authLimiter } from "./utils/rateLimiter.js";
 
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const app = express();
+
+app.use(helmet());
 
 app.set("trust proxy", 1);
 

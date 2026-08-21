@@ -35,6 +35,11 @@ const ContentSchema = new mongoose.Schema<ContentTypes>(
   },
 );
 
+// Prevent full collection scans for user-specific queries
+ContentSchema.index({ userId: 1 });
+// Text index to support full-text search strategies if needed
+ContentSchema.index({ title: "text", description: "text", tags: "text" });
+
 const Content = mongoose.model("Content", ContentSchema);
 
 export default Content;
