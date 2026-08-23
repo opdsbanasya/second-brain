@@ -29,8 +29,8 @@ export const contentvalidator = (req: Request, res: Response, next: NextFunction
         // Description Validation & Markdown-safe Sanitization
         if (description) {
             if (typeof description !== "string") return res.status(400).json({ message: "Description must be a string" });
-            if (!validator.isLength(description, { max: 15000 })) {
-                return res.status(400).json({ message: "Description must be less than 15,000 characters" });
+            if (!validator.isLength(description, { max: 20000 })) {
+                return res.status(400).json({ message: "Description must be less than 20,000 characters" });
             }
             
             // Trim whitespace

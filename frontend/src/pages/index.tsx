@@ -516,7 +516,7 @@ export default function LandingPage() {
       {/* ==========================================
           6. SOCIAL PROOF SECTION
       ========================================== */}
-      <section className="border-t border-[#E2E8F0] bg-white py-28 sm:py-36">
+      <section className="border-t border-[#E2E8F0] bg-white py-28 sm:py-36 hidden">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="max-w-2xl mb-16">
             <span className="text-xs font-bold uppercase tracking-widest text-[#4F46E5] block mb-3">
