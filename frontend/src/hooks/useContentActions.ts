@@ -60,16 +60,15 @@ export function useContentActions(onSuccess?: (id?: string) => void) {
     setCreateOpen(true);
   };
 
-  const saveContent = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const saveContent = async (data: ContentDraft) => {
     setSaving(true);
     try {
       const payload = {
-        title: draft.title.trim(),
-        link: draft.link.trim() || undefined,
-        description: draft.description.trim(),
-        type: draft.type as ContentItem["type"],
-        tagIds: draft.tags.split(",").map((tag) => tag.trim().toLowerCase()).filter(Boolean),
+        title: data.title.trim(),
+        link: data.link.trim() || undefined,
+        description: data.description.trim(),
+        type: data.type as ContentItem["type"],
+        tagIds: data.tags.split(",").map((tag) => tag.trim().toLowerCase()).filter(Boolean),
       };
 
       if (draft.id) {

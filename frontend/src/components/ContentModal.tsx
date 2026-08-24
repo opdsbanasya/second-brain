@@ -9,6 +9,9 @@ import {
 } from "react";
 import { useAppSelector } from "@/store/hooks";
 import api from "@/lib/api";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,21 +27,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { type ContentItem, type Tag } from "@/lib/data";
 
-export interface ContentDraft {
-  id: string;
-  title: string;
-  link: string;
-  description: string;
-  type: ContentItem["type"] | string;
-  tags: string;
-}
+export const contentSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1, "Title is required").max(150, "Title must be less than 150 characters"),
+  link: z.string().url("Must be a valid URL").or(z.literal("")),
+  description: z.string().max(10000, "Description is too long"),
+  type: z.string(),
+  tags: z.string(),
+});
+
+export type ContentDraft = z.infer<typeof contentSchema>;
 
 interface ContentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   draft: ContentDraft;
   setDraft: Dispatch<SetStateAction<ContentDraft>>;
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onSubmit: (data: ContentDraft) => void;
   saving: boolean;
 }
 
@@ -54,6 +59,11 @@ export function ContentModal({
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
   const [matchingTags, setMatchingTags] = useState<Tag[]>([]);
+
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<ContentDraft>({
+    resolver: zodResolver(contentSchema),
+    defaultValues: draft
+  });
 
   useEffect(() => {
     if (!tagInput.trim()) {
@@ -86,14 +96,12 @@ export function ContentModal({
 
     setTags(initialTags);
     setTagInput("");
-  }, [draft.id, draft.tags, open]);
+    reset(draft);
+  }, [draft, open, reset]);
 
   useEffect(() => {
-    setDraft((current) => ({
-      ...current,
-      tags: tags.join(", "),
-    }));
-  }, [setDraft, tags]);
+    setValue("tags", tags.join(", "));
+  }, [setValue, tags]);
 
   const commitTag = (value: string) => {
     const normalized = value.trim();
@@ -146,7 +154,7 @@ export function ContentModal({
         <div className="relative flex max-h-full flex-col p-4 sm:p-5 overflow-y-auto">
             <form
               className="flex flex-col rounded-2xl border border-border bg-background/70 p-4 sm:p-5"
-              onSubmit={onSubmit}
+              onSubmit={handleSubmit(onSubmit)}
             >
               <DialogHeader className="mb-4 items-start space-y-2 text-left">
                 <DialogTitle className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
@@ -167,17 +175,11 @@ export function ContentModal({
                   </Label>
                   <Input
                     id="content-title"
-                    required
-                    value={draft.title}
-                    onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        title: event.target.value,
-                      }))
-                    }
+                    {...register("title")}
                     className="h-12 bg-background text-base text-foreground placeholder:text-muted-foreground"
                     placeholder="Give this item a clear title"
                   />
+                  {errors.title && <p className="text-xs text-rose-600">{errors.title.message}</p>}
                 </div>
 
                 <div className="space-y-2.5 rounded-2xl border border-border bg-card p-3 sm:p-4">
@@ -191,15 +193,10 @@ export function ContentModal({
                     id="content-link"
                     type="url"
                     placeholder="https://..."
-                    value={draft.link}
-                    onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        link: event.target.value,
-                      }))
-                    }
+                    {...register("link")}
                     className="h-12 bg-background text-base text-foreground placeholder:text-muted-foreground"
                   />
+                  {errors.link && <p className="text-xs text-rose-600">{errors.link.message}</p>}
                 </div>
 
                 <div className="space-y-2.5 rounded-2xl border border-border bg-card p-3 sm:p-4">
@@ -211,13 +208,7 @@ export function ContentModal({
                   </Label>
                   <select
                     id="content-type"
-                    value={draft.type}
-                    onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        type: event.target.value,
-                      }))
-                    }
+                    {...register("type")}
                     className="h-12 w-full rounded-xl border border-input bg-background px-3 text-base text-foreground outline-none transition focus:border-ring"
                   >
                     <option value="note">Note</option>

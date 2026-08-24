@@ -29,7 +29,7 @@ api.interceptors.response.use(
       // Clear token and redirect to login if unauthorized
       localStorage.removeItem("token");
       // Use window.location for hard redirect, or dispatch a logout action
-      // window.location.href = "/login";
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }

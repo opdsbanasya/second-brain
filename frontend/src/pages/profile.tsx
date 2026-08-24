@@ -8,6 +8,25 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { restoreSession } from "@/store/slices/authSlice";
 import api from "@/lib/api";
 import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const nameSchema = z.object({ name: z.string().min(1, "Name is required") });
+type NameFormValues = z.infer<typeof nameSchema>;
+
+const passwordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password required"),
+  password: z.string().min(8, "Minimum 8 characters"),
+  confirmPassword: z.string()
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"]
+});
+type PasswordFormValues = z.infer<typeof passwordSchema>;
+
+const apiKeySchema = z.object({ newKeyName: z.string().min(1, "Key name required") });
+type ApiKeyFormValues = z.infer<typeof apiKeySchema>;
 
 type SettingsTab = "profile" | "password" | "settings";
 
@@ -17,23 +36,26 @@ export default function ProfilePage() {
 
   const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
 
-  // Profile Form State
-  const [name, setName] = useState(user?.name ?? "");
-  const [savingName, setSavingName] = useState(false);
-
-  // Password Form State
-  const [passwords, setPasswords] = useState({
-    currentPassword: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [savingPassword, setSavingPassword] = useState(false);
-
   // API Keys state
   const [apiKeys, setApiKeys] = useState<any[]>([]);
   const [loadingKeys, setLoadingKeys] = useState(true);
-  const [newKeyName, setNewKeyName] = useState("");
   const [generatedKey, setGeneratedKey] = useState("");
+
+  const [savingName, setSavingName] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
+
+  const { register: registerName, handleSubmit: handleNameSubmit, formState: { errors: nameErrors }, reset: resetName } = useForm<NameFormValues>({
+    resolver: zodResolver(nameSchema),
+    defaultValues: { name: user?.name ?? "" }
+  });
+
+  const { register: registerPassword, handleSubmit: handlePasswordSubmit, formState: { errors: passwordErrors }, reset: resetPassword } = useForm<PasswordFormValues>({
+    resolver: zodResolver(passwordSchema)
+  });
+
+  const { register: registerKey, handleSubmit: handleKeySubmit, formState: { errors: keyErrors }, reset: resetKey } = useForm<ApiKeyFormValues>({
+    resolver: zodResolver(apiKeySchema)
+  });
 
   const fetchApiKeys = async () => {
     try {
@@ -50,12 +72,10 @@ export default function ProfilePage() {
     fetchApiKeys();
   }, []);
 
-  const updateName = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!name.trim()) return toast.error("Name cannot be empty");
+  const updateName = async (data: NameFormValues) => {
     setSavingName(true);
     try {
-      await api.put("/users/update", { name: name.trim() });
+      await api.put("/users/me", { name: data.name.trim() });
       await dispatch(restoreSession()).unwrap();
       toast.success("Name updated successfully");
     } catch (error: any) {
@@ -67,17 +87,14 @@ export default function ProfilePage() {
     }
   };
 
-  const changePassword = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (passwords.password !== passwords.confirmPassword)
-      return toast.error("New passwords do not match");
+  const changePassword = async (data: PasswordFormValues) => {
     setSavingPassword(true);
     try {
-      await api.put("/users/update", {
-        currentPassword: passwords.currentPassword,
-        password: passwords.password,
+      await api.put("/users/me", {
+        currentPassword: data.currentPassword,
+        password: data.password,
       });
-      setPasswords({ currentPassword: "", password: "", confirmPassword: "" });
+      resetPassword({ currentPassword: "", password: "", confirmPassword: "" });
       toast.success("Password updated successfully");
     } catch (error: any) {
       toast.error("Could not change password", {
@@ -88,13 +105,11 @@ export default function ProfilePage() {
     }
   };
 
-  const generateApiKey = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!newKeyName.trim()) return toast.error("Key name cannot be empty");
+  const generateApiKey = async (data: ApiKeyFormValues) => {
     try {
-      const { data } = await api.post("/api-key", { name: newKeyName.trim() });
-      setGeneratedKey(data.apiKey.key);
-      setNewKeyName("");
+      const response = await api.post("/api-key", { name: data.newKeyName.trim() });
+      setGeneratedKey(response.data.apiKey.key);
+      resetKey({ newKeyName: "" });
       fetchApiKeys();
       toast.success("API key generated successfully");
     } catch (error: any) {
@@ -115,9 +130,13 @@ export default function ProfilePage() {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard!");
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("Copied to clipboard!");
+    } catch (e) {
+      toast.error("Failed to copy to clipboard");
+    }
   };
 
   return (
@@ -206,19 +225,18 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <form onSubmit={updateName} className="space-y-5">
+                <form onSubmit={handleNameSubmit(updateName)} className="space-y-5">
                   <div className="space-y-2">
                     <Label htmlFor="profile-name" className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">
                       Display Name
                     </Label>
                     <Input
                       id="profile-name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      {...registerName("name")}
                       placeholder="Your name..."
                       className="h-10 text-sm border-[#E2E8F0] bg-white text-[#0F172A] focus-visible:ring-[#4F46E5]"
-                      required
                     />
+                    {nameErrors.name && <p className="text-xs text-rose-600">{nameErrors.name.message}</p>}
                   </div>
 
                   <div className="space-y-2">
@@ -257,7 +275,7 @@ export default function ProfilePage() {
                   </p>
                 </div>
 
-                <form onSubmit={changePassword} className="space-y-5">
+                <form onSubmit={handlePasswordSubmit(changePassword)} className="space-y-5">
                   <div className="space-y-2">
                     <Label htmlFor="current-password" className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">
                       Current Password
@@ -265,12 +283,11 @@ export default function ProfilePage() {
                     <Input
                       id="current-password"
                       type="password"
-                      value={passwords.currentPassword}
-                      onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
+                      {...registerPassword("currentPassword")}
                       placeholder="••••••••••••"
                       className="h-10 text-sm border-[#E2E8F0] bg-white text-[#0F172A] focus-visible:ring-[#4F46E5]"
-                      required
                     />
+                    {passwordErrors.currentPassword && <p className="text-xs text-rose-600">{passwordErrors.currentPassword.message}</p>}
                   </div>
 
                   <div className="space-y-2">
@@ -280,12 +297,11 @@ export default function ProfilePage() {
                     <Input
                       id="new-password"
                       type="password"
-                      value={passwords.password}
-                      onChange={(e) => setPasswords({ ...passwords, password: e.target.value })}
+                      {...registerPassword("password")}
                       placeholder="••••••••••••"
                       className="h-10 text-sm border-[#E2E8F0] bg-white text-[#0F172A] focus-visible:ring-[#4F46E5]"
-                      required
                     />
+                    {passwordErrors.password && <p className="text-xs text-rose-600">{passwordErrors.password.message}</p>}
                   </div>
 
                   <div className="space-y-2">
@@ -295,12 +311,11 @@ export default function ProfilePage() {
                     <Input
                       id="confirm-password"
                       type="password"
-                      value={passwords.confirmPassword}
-                      onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
+                      {...registerPassword("confirmPassword")}
                       placeholder="••••••••••••"
                       className="h-10 text-sm border-[#E2E8F0] bg-white text-[#0F172A] focus-visible:ring-[#4F46E5]"
-                      required
                     />
+                    {passwordErrors.confirmPassword && <p className="text-xs text-rose-600">{passwordErrors.confirmPassword.message}</p>}
                   </div>
 
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-[#64748B]">
@@ -407,11 +422,11 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Generate Token Form */}
-                <form onSubmit={generateApiKey} className="space-y-4 border-t border-[#E2E8F0] pt-6">
+                <form onSubmit={handleKeySubmit(generateApiKey)} className="space-y-4 border-t border-[#E2E8F0] pt-6">
                   <h3 className="font-heading font-bold text-xs uppercase tracking-wider text-[#64748B]">
                     Generate New Personal Access Token
                   </h3>
-                  <div className="flex flex-col sm:flex-row sm:items-end gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-start gap-3">
                     <div className="flex-1 space-y-2">
                       <Label htmlFor="key-name" className="text-xs font-semibold text-[#64748B]">
                         Token Description / App Name
@@ -419,10 +434,10 @@ export default function ProfilePage() {
                       <Input
                         id="key-name"
                         placeholder="e.g. Claude Desktop, Cursor IDE"
-                        value={newKeyName}
-                        onChange={(e) => setNewKeyName(e.target.value)}
+                        {...registerKey("newKeyName")}
                         className="h-10 text-sm border-[#E2E8F0] bg-white text-[#0F172A]"
                       />
+                      {keyErrors.newKeyName && <p className="text-xs text-rose-600 mt-1">{keyErrors.newKeyName.message}</p>}
                     </div>
                     <Button
                       type="submit"

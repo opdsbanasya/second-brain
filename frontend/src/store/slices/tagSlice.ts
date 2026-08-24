@@ -18,7 +18,7 @@ export const fetchTags = createAsyncThunk(
   "tags/fetchTags",
   async (query: string = "", { rejectWithValue }) => {
     try {
-      const response = await api.get(`/tags?q=${query}`);
+      const response = await api.get(`/tags?q=${encodeURIComponent(query)}`);
       // Map backend tags
       return response.data.tags.map((tag: any) => ({
         id: tag._id || tag.name,

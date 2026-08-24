@@ -139,7 +139,7 @@ export function ContentCard({
           <a
             href={item.link}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             className="text-[#4F46E5] hover:underline flex items-center gap-1 shrink-0 font-semibold"
           >
             <ExternalLink className="h-3 w-3" />

@@ -41,9 +41,6 @@ const Header = () => {
     if (location.pathname !== "/dashboard" && value.trim()) {
       navigate("/dashboard");
     }
-    if (!value.trim()) {
-      dispatch(fetchContents());
-    }
   };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -145,10 +142,6 @@ const Header = () => {
         ) : (
           <>
             <nav className="ml-auto hidden items-center gap-1 md:flex">
-              <HeaderLink to="/dashboard">Dashboard</HeaderLink>
-              <HeaderLink to="/shared-links">Shared</HeaderLink>
-              <HeaderLink to="/#pricing">Pricing</HeaderLink>
-              <HeaderLink to="/#mcp">Docs</HeaderLink>
               <HeaderLink to="/about">About</HeaderLink>
             </nav>
             <div className="ml-auto flex items-center gap-2 md:ml-4">

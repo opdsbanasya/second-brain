@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { SiteHeader } from "@/components/SiteHeader";
-import { Footer } from "@/components/Footer";
+import Footer from "@/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Heart, Compass, Sprout } from "lucide-react";
 

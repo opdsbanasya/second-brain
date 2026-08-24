@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Footer from "@/layout/Footer";
 
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState<
@@ -649,145 +650,7 @@ export default function LandingPage() {
       {/* ==========================================
           9. FOOTER SECTION
       ========================================== */}
-      <footer className="border-t border-[#E2E8F0] bg-white py-16 px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 mb-16">
-            {/* Col 1: Brand */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-md bg-[#0F172A] text-white">
-                  <span className="font-heading font-extrabold text-sm tracking-tight">
-                    2B
-                  </span>
-                </div>
-                <span className="font-heading font-bold text-base tracking-tight text-[#0F172A]">
-                  Second Brain
-                </span>
-              </div>
-              <p className="text-sm text-[#64748B] leading-relaxed">
-                Personal knowledge archive and AI-ready memory system.
-              </p>
-              <p className="text-xs text-[#94A3B8]">
-                © {new Date().getFullYear()} Second Brain Inc. All rights
-                reserved.
-              </p>
-            </div>
-
-            {/* Col 2: Product */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-[#0F172A]">
-                Product
-              </h4>
-              <ul className="space-y-2 text-sm text-[#64748B]">
-                <li>
-                  <Link
-                    to="/dashboard"
-                    className="hover:text-[#0F172A] transition-colors"
-                  >
-                    Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/shared-links"
-                    className="hover:text-[#0F172A] transition-colors"
-                  >
-                    Shared Links
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href="#mcp"
-                    className="hover:text-[#0F172A] transition-colors"
-                  >
-                    MCP Integration
-                  </a>
-                </li>
-                
-              </ul>
-            </div>
-
-            {/* Col 3: Developers */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-[#0F172A]">
-                Developers
-              </h4>
-              <ul className="space-y-2 text-sm text-[#64748B]">
-                <li>
-                  <a
-                    href="https://modelcontextprotocol.io"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-[#0F172A] transition-colors inline-flex items-center gap-1"
-                  >
-                    MCP Specification <ExternalLink className="h-3 w-3" />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#mcp"
-                    className="hover:text-[#0F172A] transition-colors"
-                  >
-                    API Reference
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://github.com/opdsbanasya/second-brain"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-[#0F172A] transition-colors"
-                  >
-                    GitHub Repository
-                  </a>
-                </li>
-
-              </ul>
-            </div>
-
-            {/* Col 4: Legal & Support */}
-            <div className="space-y-3">
-              <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-[#0F172A]">
-                Legal & Support
-              </h4>
-              <ul className="space-y-2 text-sm text-[#64748B]">
-                <li>
-                  <Link
-                    to="/privacy"
-                    className="hover:text-[#0F172A] transition-colors"
-                  >
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/privacy"
-                    className="hover:text-[#0F172A] transition-colors"
-                  >
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/contact"
-                    className="hover:text-[#0F172A] transition-colors"
-                  >
-                    Security & Trust
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/contact"
-                    className="hover:text-[#0F172A] transition-colors"
-                  >
-                    Contact Support
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

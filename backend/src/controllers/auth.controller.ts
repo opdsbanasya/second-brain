@@ -17,7 +17,7 @@ const setSessionCookie = (
   if(!expiresInDays) return res.status(500).json({message: "internal server error"})
 
   const token = jwt.sign({ _id: user._id, email: user.email }, secretKey, {
-    expiresIn: `${expiresInDays}d`,
+    expiresIn: Number(expiresInDays) * 24 * 60 * 60,
   });
   
   res.cookie("token", token, {

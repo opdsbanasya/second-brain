@@ -1,11 +1,22 @@
 import { Link, useLocation, useNavigate } from "react-router";
-import { Brain, Eye, EyeOff, Search, FileText, BookOpen, Link as LinkIcon, Video, Check } from "lucide-react";
+import { Brain, Eye, EyeOff, Search, FileText, BookOpen, Link as LinkIcon, Video, Check, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { register, clearError } from "@/store/slices/authSlice";
+import { register as registerUser, clearError } from "@/store/slices/authSlice";
 import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const registerSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+});
+
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 const GoogleIcon = () => (
   <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24">
@@ -35,9 +46,6 @@ const GithubIcon = () => (
 );
 
 export default function RegisterPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -53,9 +61,17 @@ export default function RegisterPage() {
     }
   }, [dispatch, isAuthenticated, navigate, location]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    dispatch(register({ name, email, password }));
+  const {
+    register: formRegister,
+    handleSubmit,
+    formState: { errors: formErrors },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { name: "", email: "", password: "" },
+  });
+
+  const onSubmit = (data: RegisterFormValues) => {
+    dispatch(registerUser({ name: data.name, email: data.email, password: data.password }));
   };
 
   return (
@@ -230,7 +246,7 @@ export default function RegisterPage() {
           )}
 
           {/* Registration Form */}
-          <form className="space-y-3.5" onSubmit={handleSubmit}>
+          <form className="space-y-3.5" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-1.5">
               <Label htmlFor="name" className="text-xs font-semibold text-neutral-700">
                 Full Name
@@ -238,12 +254,12 @@ export default function RegisterPage() {
               <Input
                 id="name"
                 type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                {...formRegister("name")}
+                autoComplete="name"
                 placeholder="John Doe"
-                required
                 className="h-11 bg-white border border-neutral-200 hover:border-neutral-300 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20 rounded-2xl shadow-2xs transition-all text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400"
               />
+              {formErrors.name && <p className="text-xs text-rose-600">{formErrors.name.message}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -253,12 +269,12 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...formRegister("email")}
+                autoComplete="email"
                 placeholder="name@example.com"
-                required
                 className="h-11 bg-white border border-neutral-200 hover:border-neutral-300 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20 rounded-2xl shadow-2xs transition-all text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400"
               />
+              {formErrors.email && <p className="text-xs text-rose-600">{formErrors.email.message}</p>}
             </div>
 
             <div className="space-y-1.5">
@@ -269,10 +285,9 @@ export default function RegisterPage() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 6 characters"
-                  required
+                  {...formRegister("password")}
+                  autoComplete="new-password"
+                  placeholder="At least 8 characters"
                   className="h-11 bg-white border border-neutral-200 hover:border-neutral-300 focus:border-[#4F46E5] focus:ring-2 focus:ring-[#4F46E5]/20 rounded-2xl shadow-2xs transition-all text-xs sm:text-sm pr-10 text-neutral-900 placeholder:text-neutral-400"
                 />
                 <button
@@ -283,6 +298,7 @@ export default function RegisterPage() {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {formErrors.password && <p className="text-xs text-rose-600">{formErrors.password.message}</p>}
             </div>
 
             <Button
@@ -308,9 +324,15 @@ export default function RegisterPage() {
           {/* Trust Footer Section */}
           <div className="pt-5 border-t border-neutral-100 flex items-center gap-3">
             <div className="flex -space-x-2 overflow-hidden shrink-0">
-              <img className="inline-block h-7 w-7 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="User" />
-              <img className="inline-block h-7 w-7 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="User" />
-              <img className="inline-block h-7 w-7 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80" alt="User" />
+              <div className="inline-flex h-7 w-7 items-center justify-center rounded-full ring-2 ring-white bg-slate-100 text-slate-600">
+                <UserIcon className="h-4 w-4" />
+              </div>
+              <div className="inline-flex h-7 w-7 items-center justify-center rounded-full ring-2 ring-white bg-indigo-100 text-indigo-600">
+                <UserIcon className="h-4 w-4" />
+              </div>
+              <div className="inline-flex h-7 w-7 items-center justify-center rounded-full ring-2 ring-white bg-teal-100 text-teal-600">
+                <UserIcon className="h-4 w-4" />
+              </div>
             </div>
             <p className="text-[11px] leading-tight text-neutral-500 font-medium">
               Trusted by developers & researchers. <span className="text-neutral-900 font-semibold hidden">12k+ notes saved</span>

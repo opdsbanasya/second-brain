@@ -35,16 +35,30 @@ export function MarkdownContent({ content, compact = false, className }: Markdow
     ),
     strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
     em: ({ children }) => <em className="italic text-inherit">{children}</em>,
-    a: ({ href, children }) => (
-      <a
-        href={href}
-        target="_blank"
-        rel="noreferrer"
-        className="font-medium text-primary underline-offset-4 hover:underline"
-      >
-        {children}
-      </a>
-    ),
+    a: ({ href, children }) => {
+      let safeHref = href;
+      if (href) {
+        try {
+          const url = new URL(href, window.location.origin);
+          if (!["http:", "https:", "mailto:"].includes(url.protocol)) {
+            safeHref = "#";
+          }
+        } catch {
+          // Fallback if unparseable
+          safeHref = "#";
+        }
+      }
+      return (
+        <a
+          href={safeHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
+          {children}
+        </a>
+      );
+    },
     code: ({ children }) => {
       const text = String(children);
       const isBlock = text.includes("\n");

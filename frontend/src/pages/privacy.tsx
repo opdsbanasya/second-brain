@@ -1,5 +1,5 @@
 import { SiteHeader } from "@/components/SiteHeader";
-import { Footer } from "@/components/Footer";
+import Footer from "@/layout/Footer";
 
 export default function PrivacyPagePage() {
   return <PrivacyPage />;
