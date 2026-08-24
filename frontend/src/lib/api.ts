@@ -26,10 +26,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Clear token and redirect to login if unauthorized
       localStorage.removeItem("token");
-      // Use window.location for hard redirect, or dispatch a logout action
-      window.location.href = "/login";
+      
+      // Prevent redirect loop on restore session or login/register
+      const isAuthEndpoint = error.config?.url?.includes('/users/me') || error.config?.url?.includes('/auth/');
+      
+      if (!isAuthEndpoint && window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }
