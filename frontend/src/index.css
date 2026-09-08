@@ -164,3 +164,27 @@
 @utility tag-rose   { background-color: #FFE4E6; color: #881337; }
 @utility tag-teal   { background-color: #CCFBF1; color: #134E4A; }
 @utility tag-slate  { background-color: #E2E8F0; color: #0F172A; }
+
+/* === BlockNote Editor Inner Padding Overrides === */
+/* Override BlockNote's default 54px inline padding for compact mobile and clean responsive layout */
+.bn-container .bn-editor,
+.bn-editor {
+  padding-inline: 8px !important;
+  padding-block: 8px !important;
+}
+
+@media (min-width: 640px) {
+  .bn-container .bn-editor,
+  .bn-editor {
+    padding-inline: 20px !important;
+    padding-block: 12px !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bn-container .bn-editor,
+  .bn-editor {
+    padding-inline: 32px !important;
+    padding-block: 16px !important;
+  }
+}

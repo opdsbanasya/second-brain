@@ -3,6 +3,7 @@ import Content from "../models/Content.js";
 import type { ContentCreateBody } from "../types/Content.js";
 import Tags from "../models/Tags.js";
 import mongoose from "mongoose";
+import { mdToPdf } from "md-to-pdf";
 
 export const getAllContents = async (req: Request, res: Response) => {
   try {
@@ -210,5 +211,149 @@ export const searchContent = async (req: Request, res: Response) => {
   } catch (error) {
     // console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const exportContentToPdf = async (req: Request, res: Response) => {
+  try {
+    // Read contentId from query (or fallback to body)
+    const contentId = (req.query.contentId || req.query.id || req.body?.contentId) as string;
+
+    if (!contentId) {
+      return res.status(400).json({ message: "contentId is required in query parameter" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(contentId)) {
+      return res.status(400).json({ message: "Invalid contentId format" });
+    }
+
+    // Fetch details from DB
+    const content = await Content.findOne({
+      _id: contentId as any,
+      userId: req.user!._id as any,
+    });
+
+    if (!content) {
+      return res.status(404).json({ message: "Content not found" });
+    }
+
+    const { title, description, link, tags } = content;
+
+    // Clean unwanted trailing backslashes from editor linebreaks/soft-breaks
+    const cleanDescription = (description || "")
+      .replace(/\\+(\s*\r?\n)/g, "$1")
+      .replace(/\\+\s*$/gm, "");
+
+    let markdown = `# ${title || "Untitled"}\n\n`;
+    if (link) {
+      markdown += `**Link:** [${link}](${link})\n\n`;
+    }
+    if (Array.isArray(tags) && tags.length > 0) {
+      markdown += `**Tags:** ${tags.map((t: string) => `\`#${t}\``).join(" ")}\n\n`;
+    }
+    markdown += `---\n\n${cleanDescription}`;
+
+    const customCss = `
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #0f172a;
+        line-height: 1.65;
+      }
+      h1, h2, h3, h4, h5, h6 {
+        color: #0f172a;
+        font-weight: 700;
+        margin-top: 1.2em;
+        margin-bottom: 0.4em;
+      }
+      p {
+        margin: 0.6em 0;
+      }
+      hr {
+        border: none !important;
+        border-top: 1px solid #e2e8f0 !important;
+        height: 0 !important;
+        margin: 20px 0 24px 0 !important;
+        clear: both !important;
+      }
+      pre {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 14px 18px !important;
+        margin: 16px 0 !important;
+        overflow-x: auto !important;
+        page-break-inside: avoid !important;
+      }
+      pre code.hljs,
+      pre code {
+        background: transparent !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
+        font-size: 13px !important;
+        line-height: 1.6 !important;
+        padding: 0 !important;
+        border: none !important;
+      }
+      code:not(pre code) {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        padding: 2px 6px !important;
+        border-radius: 4px !important;
+        border: 1px solid #e2e8f0 !important;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        font-size: 0.9em !important;
+      }
+      blockquote {
+        border-left: 3px solid #cbd5e1 !important;
+        background: #f8fafc !important;
+        padding: 10px 16px !important;
+        border-radius: 4px !important;
+        color: #475569 !important;
+        margin: 1em 0 !important;
+      }
+      table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin: 1em 0 !important;
+      }
+      table th, table td {
+        border: 1px solid #e2e8f0 !important;
+        padding: 8px 12px !important;
+      }
+      table th {
+        background: #f8fafc !important;
+      }
+    `;
+
+    const pdf = await mdToPdf(
+      { content: markdown },
+      {
+        css: customCss,
+        highlight_style: "github",
+        launch_options: {
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        },
+        pdf_options: {
+          format: "A4",
+          margin: { top: "20mm", right: "20mm", bottom: "20mm", left: "20mm" },
+          printBackground: true,
+        },
+      }
+    );
+
+    const safeTitle = (title || "document")
+      .trim()
+      .replace(/[^a-zA-Z0-9_\-\s]/g, "")
+      .replace(/\s+/g, "_");
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${safeTitle || "document"}.pdf"`
+    );
+    res.setHeader("Content-Length", pdf.content.length);
+    return res.send(pdf.content);
+  } catch (error) {
+    console.error("Failed to export PDF with md-to-pdf:", error);
+    return res.status(500).json({ message: "Failed to generate PDF" });
   }
 };
