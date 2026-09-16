@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import Content from "../models/Content.js";
+import SharableLink from "../models/SharableLink.js";
 import type { ContentCreateBody } from "../types/Content.js";
 import Tags from "../models/Tags.js";
 import mongoose from "mongoose";
@@ -182,6 +183,7 @@ export const deleteContentById = async (req: Request, res: Response) => {
     }
 
     await Content.findByIdAndDelete(content._id);
+    await SharableLink.deleteMany({ contentId: content._id });
     res.json({ message: "Content deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });

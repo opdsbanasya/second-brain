@@ -83,7 +83,7 @@ export default function SharedContentPage() {
         </div>
 
         <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-          {content.title}
+          {content?.title}
         </h1>
 
         {content.description && (

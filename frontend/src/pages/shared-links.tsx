@@ -27,15 +27,18 @@ import api from "@/lib/api";
 
 type SharedLink = {
   _id: string;
-  contentId: string | { _id: string; title: string };
+  contentId: string | { _id: string; title?: string } | null;
   url: string;
   createdAt: string;
   expiresAt?: string;
   active: boolean;
   viewCount: number;
 };
-const dateInputValue = (value?: string) =>
-  value ? new Date(value).toISOString().slice(0, 10) : "";
+const dateInputValue = (value?: string) => {
+  if (!value) return "";
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
+};
 
 export default function SharedLinksPage() {
   const [query, setQuery] = useState("");
@@ -236,7 +239,13 @@ function ShareCard({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="font-semibold">{titleFor(link)}</h2>
+            <h2
+              className={`font-semibold ${
+                !link.contentId ? "italic text-muted-foreground" : ""
+              }`}
+            >
+              {titleFor(link)}
+            </h2>
             <Status active={active} expired={expired} />
           </div>
           <button
@@ -324,7 +333,10 @@ function IconButton({
   );
 }
 function titleFor(link: SharedLink) {
+  if (!link.contentId) {
+    return "Deleted content";
+  }
   return typeof link.contentId === "string"
     ? "Shared content"
-    : link.contentId.title;
+    : link.contentId.title || "Untitled";
 }
