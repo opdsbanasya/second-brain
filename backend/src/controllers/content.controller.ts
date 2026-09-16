@@ -5,6 +5,8 @@ import type { ContentCreateBody } from "../types/Content.js";
 import Tags from "../models/Tags.js";
 import mongoose from "mongoose";
 import { mdToPdf } from "md-to-pdf";
+import fs from "fs";
+import { execSync } from "child_process";
 
 export const getAllContents = async (req: Request, res: Response) => {
   try {
@@ -216,6 +218,37 @@ export const searchContent = async (req: Request, res: Response) => {
   }
 };
 
+const resolveChromiumPath = (): string | undefined => {
+  if (
+    process.env.PUPPETEER_EXECUTABLE_PATH &&
+    fs.existsSync(process.env.PUPPETEER_EXECUTABLE_PATH)
+  ) {
+    return process.env.PUPPETEER_EXECUTABLE_PATH;
+  }
+  const candidates = [
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/root/.nix-profile/bin/chromium",
+    "/nix/var/nix/profiles/default/bin/chromium",
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) return p;
+  }
+  try {
+    const which = execSync(
+      "which chromium || which chromium-browser || which google-chrome",
+      {
+        encoding: "utf8",
+        stdio: ["pipe", "pipe", "ignore"],
+      }
+    ).trim();
+    if (which && fs.existsSync(which)) return which;
+  } catch {}
+  return undefined;
+};
+
 export const exportContentToPdf = async (req: Request, res: Response) => {
   try {
     // Read contentId from query (or fallback to body)
@@ -326,15 +359,15 @@ export const exportContentToPdf = async (req: Request, res: Response) => {
       }
     `;
 
+    const chromiumPath = resolveChromiumPath();
+
     const pdf = await mdToPdf(
       { content: markdown },
       {
         css: customCss,
         highlight_style: "github",
         launch_options: {
-          ...(process.env.PUPPETEER_EXECUTABLE_PATH
-            ? { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH }
-            : {}),
+          ...(chromiumPath ? { executablePath: chromiumPath } : {}),
           args: [
             "--no-sandbox",
             "--disable-setuid-sandbox",
@@ -362,8 +395,11 @@ export const exportContentToPdf = async (req: Request, res: Response) => {
     );
     res.setHeader("Content-Length", pdf.content.length);
     return res.send(pdf.content);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to export PDF with md-to-pdf:", error);
-    return res.status(500).json({ message: "Failed to generate PDF" });
+    return res.status(500).json({
+      message: "Failed to generate PDF",
+      error: error?.message || String(error),
+    });
   }
 };

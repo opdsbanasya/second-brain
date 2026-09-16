@@ -298,162 +298,6 @@ export default function ContentDetailPage() {
 
   const [isExportingPdf, setIsExportingPdf] = useState(false);
 
-  const exportClientSidePdf = () => {
-    try {
-      const editorHtml = editor ? editor.blocksToFullHTML(editor.document) : "";
-      const printWindow = window.open("", "_blank");
-      if (!printWindow) {
-        toast.error("Popup blocked. Please allow popups to export PDF.", { id: "export-pdf" });
-        return;
-      }
-
-      const safeTitle = (title || "document").trim();
-
-      const docHtml = `<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>${safeTitle}</title>
-    <style>
-      @page {
-        size: A4;
-        margin: 20mm 18mm;
-      }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        color: #0f172a;
-        line-height: 1.65;
-        padding: 0;
-        margin: 0 auto;
-        max-width: 800px;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-      h1 {
-        font-size: 24pt;
-        font-weight: 700;
-        color: #0f172a;
-        margin: 0 0 12px 0;
-        line-height: 1.25;
-      }
-      .meta-box {
-        margin-bottom: 24px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid #e2e8f0;
-        font-size: 10pt;
-        color: #64748b;
-      }
-      .meta-row {
-        margin: 4px 0;
-      }
-      .tag-badge {
-        display: inline-block;
-        background: #f1f5f9;
-        color: #334155;
-        padding: 2px 8px;
-        border-radius: 9999px;
-        font-size: 9pt;
-        font-weight: 500;
-        margin-right: 6px;
-        margin-bottom: 4px;
-      }
-      a {
-        color: #2563eb;
-        text-decoration: underline;
-      }
-      pre {
-        background: #0f172a !important;
-        color: #f8fafc !important;
-        border-radius: 8px;
-        padding: 14px 18px;
-        margin: 16px 0;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
-        font-size: 9.5pt;
-        line-height: 1.6;
-        overflow-x: auto;
-        page-break-inside: avoid;
-      }
-      code {
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        font-size: 9.5pt;
-      }
-      :not(pre) > code {
-        background: #f1f5f9;
-        color: #0f172a;
-        padding: 2px 6px;
-        border-radius: 4px;
-      }
-      blockquote {
-        border-left: 3px solid #cbd5e1;
-        background: #f8fafc;
-        margin: 14px 0;
-        padding: 8px 14px;
-        color: #475569;
-        font-style: italic;
-        border-radius: 0 4px 4px 0;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 16px 0;
-        page-break-inside: avoid;
-      }
-      th, td {
-        border: 1px solid #e2e8f0;
-        padding: 8px 12px;
-        text-align: left;
-      }
-      th {
-        background: #f8fafc;
-        font-weight: 600;
-      }
-      @media print {
-        body {
-          max-width: 100%;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <h1>${safeTitle}</h1>
-    <div class="meta-box">
-      ${initialContent?.contentType ? `<div class="meta-row"><strong>Type:</strong> ${initialContent.contentType}</div>` : ""}
-      ${link ? `<div class="meta-row"><strong>Link:</strong> <a href="${link}">${link}</a></div>` : ""}
-      ${
-        initialContent?.tags && initialContent.tags.length > 0
-          ? `<div class="meta-row" style="margin-top: 8px;">${initialContent.tags
-              .map((t) => `<span class="tag-badge">#${t}</span>`)
-              .join(" ")}</div>`
-          : ""
-      }
-    </div>
-    <div class="content">
-      ${editorHtml}
-    </div>
-    <script>
-      window.onload = function() {
-        setTimeout(function() {
-          window.focus();
-          window.print();
-        }, 300);
-      };
-    </script>
-  </body>
-</html>`;
-
-      printWindow.document.open();
-      printWindow.document.write(docHtml);
-      printWindow.document.close();
-      toast.success("Print dialog opened. Select 'Save as PDF'", { id: "export-pdf" });
-    } catch (err: any) {
-      console.error("Browser print-to-PDF error:", err);
-      toast.error("Failed to generate PDF", {
-        id: "export-pdf",
-        description: err.message || "Could not open print window",
-      });
-    }
-  };
-
   const exportAsPdf = async () => {
     if (isExportingPdf || !contentId) return;
     try {
@@ -485,8 +329,21 @@ export default function ContentDetailPage() {
 
       toast.success("PDF downloaded successfully!", { id: "export-pdf" });
     } catch (error: any) {
-      console.warn("Server PDF export failed (e.g. production serverless/Railway without Chromium), falling back to browser print-to-PDF:", error);
-      exportClientSidePdf();
+      console.error("PDF export error:", error);
+      let errorMsg = "Server error while generating PDF";
+      if (error.response?.data instanceof Blob) {
+        try {
+          const text = await error.response.data.text();
+          const json = JSON.parse(text);
+          errorMsg = json.message || errorMsg;
+        } catch {}
+      } else if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+      }
+      toast.error("Failed to export PDF", {
+        id: "export-pdf",
+        description: errorMsg,
+      });
     } finally {
       setIsExportingPdf(false);
     }
