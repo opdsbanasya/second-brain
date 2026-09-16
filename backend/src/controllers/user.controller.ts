@@ -55,7 +55,7 @@ export const updateUser = async (req: Request, res: Response) => {
                 password: password ? password : user.password,
             },
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true
             }
         )

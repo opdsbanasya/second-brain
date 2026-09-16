@@ -29,7 +29,7 @@ const checkAndCreateTags = async (tags: string[]) => {
       await Tags.findOneAndUpdate(
         { name: tagName.toLowerCase() },
         { $inc: { useCount: 1 } },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: "after" }
       );
     }
   } catch (error) {
@@ -154,7 +154,7 @@ export const updateContentById = async (req: Request, res: Response) => {
     const updatedContent = await Content.findOneAndUpdate(
       { _id: id as any, userId: req.user!._id as any },
       updates as any,
-      { new: true },
+      { returnDocument: "after" },
     );
 
     res.json({ content: updatedContent });
@@ -340,9 +340,6 @@ export const exportContentToPdf = async (req: Request, res: Response) => {
             "--disable-setuid-sandbox",
             "--disable-dev-shm-usage",
             "--disable-gpu",
-            "--no-first-run",
-            "--no-zygote",
-            "--single-process",
           ],
         },
         pdf_options: {
