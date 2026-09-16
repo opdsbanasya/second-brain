@@ -332,7 +332,18 @@ export const exportContentToPdf = async (req: Request, res: Response) => {
         css: customCss,
         highlight_style: "github",
         launch_options: {
-          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+          ...(process.env.PUPPETEER_EXECUTABLE_PATH
+            ? { executablePath: process.env.PUPPETEER_EXECUTABLE_PATH }
+            : {}),
+          args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--no-first-run",
+            "--no-zygote",
+            "--single-process",
+          ],
         },
         pdf_options: {
           format: "A4",

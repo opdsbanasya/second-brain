@@ -75,10 +75,14 @@ export function MarkdownContent({ content, compact = false, className }: Markdow
     hr: () => <hr className="my-4 border-border" />,
   };
 
+  const cleanContent = (content || "")
+    .replace(/\\+(\s*\r?\n)/g, "$1")
+    .replace(/\\+\s*$/gm, "");
+
   return (
     <div className={cn("markdown-content", compact && "line-clamp-3 overflow-hidden", className)}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-        {content}
+        {cleanContent}
       </ReactMarkdown>
     </div>
   );

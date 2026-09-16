@@ -68,6 +68,11 @@ function getContentIcon(contentType: string) {
   }
 }
 
+const cleanMarkdown = (text?: string) =>
+  (text || "")
+    .replace(/\\+(\s*\r?\n)/g, "$1")
+    .replace(/\\+\s*$/gm, "");
+
 export default function ContentDetailPage() {
   const { contentId } = useParams();
   const navigate = useNavigate();
@@ -81,8 +86,79 @@ export default function ContentDetailPage() {
   const [description, setDescription] = useState("");
   const [link, setLink] = useState("");
 
-  // BlockNote Editor Instance
-  const editor = useCreateBlockNote();
+  // BlockNote Editor Instance with direct markdown parsing on paste
+  const editor = useCreateBlockNote({
+    pasteHandler: ({ event, editor, defaultPasteHandler }) => {
+      // 1. If currently inside a code block, let default handler paste raw text
+      const isInCodeBlock = editor.transact(
+        (tr) =>
+          Boolean(
+            tr.selection.$from.parent.type.spec.code &&
+              tr.selection.$to.parent.type.spec.code
+          )
+      );
+      if (isInCodeBlock) {
+        return defaultPasteHandler();
+      }
+
+      const text = event.clipboardData?.getData("text/plain");
+      if (text) {
+        const normalized = cleanMarkdown(text.replace(/\r\n/g, "\n"));
+        // Check if the pasted text contains markdown structures (code blocks, headings, lists, blockquotes, tables)
+        const hasMarkdownIndicators =
+          /(^|\n)\s*(```|~~~|#{1,6}\s+|[-*+]\s+|\d+\.\s+|>|\|.+\|)/m.test(normalized);
+
+        if (hasMarkdownIndicators) {
+          const parsedBlocks = editor.tryParseMarkdownToBlocks(normalized);
+          if (
+            parsedBlocks &&
+            parsedBlocks.length > 0 &&
+            (parsedBlocks.length > 1 || parsedBlocks[0].type !== "paragraph")
+          ) {
+            const cursor = editor.getTextCursorPosition();
+            const currentBlock = cursor?.block;
+
+            const isCurrentBlockEmpty =
+              !currentBlock?.content ||
+              (Array.isArray(currentBlock.content) &&
+                (currentBlock.content.length === 0 ||
+                  currentBlock.content.every(
+                    (c: any) => c.type === "text" && !c.text.trim()
+                  )));
+
+            let insertedBlocks: any[] = [];
+            if (currentBlock) {
+              if (isCurrentBlockEmpty) {
+                insertedBlocks = editor.replaceBlocks([currentBlock], parsedBlocks as any).insertedBlocks;
+              } else {
+                insertedBlocks = editor.insertBlocks(parsedBlocks as any, currentBlock, "after");
+              }
+            } else {
+              insertedBlocks = editor.replaceBlocks(editor.document, parsedBlocks as any).insertedBlocks;
+            }
+
+            if (insertedBlocks && insertedBlocks.length > 0) {
+              const lastBlock = insertedBlocks[insertedBlocks.length - 1];
+              try {
+                editor.setTextCursorPosition(lastBlock, "end");
+              } catch {
+                /* cursor set fallback */
+              }
+            }
+
+            const updatedMd = editor.blocksToMarkdownLossy(editor.document);
+            setDescription(cleanMarkdown(updatedMd));
+            return true;
+          }
+        }
+      }
+
+      return defaultPasteHandler({
+        prioritizeMarkdownOverHTML: true,
+        plainTextAsMarkdown: true,
+      });
+    },
+  });
   const initialLoadedRef = useRef(false);
 
   // Save Status
@@ -107,7 +183,7 @@ export default function ContentDetailPage() {
         setIsSaved(true);
 
         // Populate BlockNote Editor
-        const descText = item.description || "";
+        const descText = cleanMarkdown(item.description || "");
         const blocks = descText.trim()
           ? editor.tryParseMarkdownToBlocks(descText)
           : [{ type: "paragraph" as const }];
@@ -149,9 +225,10 @@ export default function ContentDetailPage() {
     }
     setIsSaving(true);
     try {
+      const cleanedDescription = cleanMarkdown(description.trim());
       const { data } = await api.put(`/content/${encodeURIComponent(contentId)}`, {
         title: title.trim(),
-        description: description.trim(),
+        description: cleanedDescription,
         link: link.trim() || undefined,
       });
 
@@ -186,9 +263,7 @@ export default function ContentDetailPage() {
   const exportAsMarkdown = () => {
     try {
       const docMarkdown = editor ? editor.blocksToMarkdownLossy(editor.document) : description;
-      const cleanDocMarkdown = (docMarkdown || "")
-        .replace(/\\+(\s*\r?\n)/g, "$1")
-        .replace(/\\+\s*$/gm, "");
+      const cleanDocMarkdown = cleanMarkdown(docMarkdown);
 
       let md = `# ${title || "Untitled"}\n\n`;
       if (initialContent?.contentType) {
@@ -223,6 +298,162 @@ export default function ContentDetailPage() {
 
   const [isExportingPdf, setIsExportingPdf] = useState(false);
 
+  const exportClientSidePdf = () => {
+    try {
+      const editorHtml = editor ? editor.blocksToFullHTML(editor.document) : "";
+      const printWindow = window.open("", "_blank");
+      if (!printWindow) {
+        toast.error("Popup blocked. Please allow popups to export PDF.", { id: "export-pdf" });
+        return;
+      }
+
+      const safeTitle = (title || "document").trim();
+
+      const docHtml = `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>${safeTitle}</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 20mm 18mm;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #0f172a;
+        line-height: 1.65;
+        padding: 0;
+        margin: 0 auto;
+        max-width: 800px;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      h1 {
+        font-size: 24pt;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 12px 0;
+        line-height: 1.25;
+      }
+      .meta-box {
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 10pt;
+        color: #64748b;
+      }
+      .meta-row {
+        margin: 4px 0;
+      }
+      .tag-badge {
+        display: inline-block;
+        background: #f1f5f9;
+        color: #334155;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-size: 9pt;
+        font-weight: 500;
+        margin-right: 6px;
+        margin-bottom: 4px;
+      }
+      a {
+        color: #2563eb;
+        text-decoration: underline;
+      }
+      pre {
+        background: #0f172a !important;
+        color: #f8fafc !important;
+        border-radius: 8px;
+        padding: 14px 18px;
+        margin: 16px 0;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+        font-size: 9.5pt;
+        line-height: 1.6;
+        overflow-x: auto;
+        page-break-inside: avoid;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 9.5pt;
+      }
+      :not(pre) > code {
+        background: #f1f5f9;
+        color: #0f172a;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      blockquote {
+        border-left: 3px solid #cbd5e1;
+        background: #f8fafc;
+        margin: 14px 0;
+        padding: 8px 14px;
+        color: #475569;
+        font-style: italic;
+        border-radius: 0 4px 4px 0;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 16px 0;
+        page-break-inside: avoid;
+      }
+      th, td {
+        border: 1px solid #e2e8f0;
+        padding: 8px 12px;
+        text-align: left;
+      }
+      th {
+        background: #f8fafc;
+        font-weight: 600;
+      }
+      @media print {
+        body {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>${safeTitle}</h1>
+    <div class="meta-box">
+      ${initialContent?.contentType ? `<div class="meta-row"><strong>Type:</strong> ${initialContent.contentType}</div>` : ""}
+      ${link ? `<div class="meta-row"><strong>Link:</strong> <a href="${link}">${link}</a></div>` : ""}
+      ${
+        initialContent?.tags && initialContent.tags.length > 0
+          ? `<div class="meta-row" style="margin-top: 8px;">${initialContent.tags
+              .map((t) => `<span class="tag-badge">#${t}</span>`)
+              .join(" ")}</div>`
+          : ""
+      }
+    </div>
+    <div class="content">
+      ${editorHtml}
+    </div>
+    <script>
+      window.onload = function() {
+        setTimeout(function() {
+          window.focus();
+          window.print();
+        }, 300);
+      };
+    </script>
+  </body>
+</html>`;
+
+      printWindow.document.open();
+      printWindow.document.write(docHtml);
+      printWindow.document.close();
+      toast.success("Print dialog opened. Select 'Save as PDF'", { id: "export-pdf" });
+    } catch (err: any) {
+      console.error("Browser print-to-PDF error:", err);
+      toast.error("Failed to generate PDF", {
+        id: "export-pdf",
+        description: err.message || "Could not open print window",
+      });
+    }
+  };
+
   const exportAsPdf = async () => {
     if (isExportingPdf || !contentId) return;
     try {
@@ -254,11 +485,8 @@ export default function ContentDetailPage() {
 
       toast.success("PDF downloaded successfully!", { id: "export-pdf" });
     } catch (error: any) {
-      console.error("PDF export error:", error);
-      toast.error("Failed to export PDF", {
-        id: "export-pdf",
-        description: error.response?.data?.message || error.message || "Server error",
-      });
+      console.warn("Server PDF export failed (e.g. production serverless/Railway without Chromium), falling back to browser print-to-PDF:", error);
+      exportClientSidePdf();
     } finally {
       setIsExportingPdf(false);
     }
@@ -568,7 +796,7 @@ export default function ContentDetailPage() {
               onChange={(nextEditor) => {
                 if (!initialLoadedRef.current) return;
                 const markdown = nextEditor.blocksToMarkdownLossy(nextEditor.document);
-                setDescription(markdown);
+                setDescription(cleanMarkdown(markdown));
               }}
               className="bn-editor-scroll h-full min-h-[14rem] sm:min-h-[16rem] w-full"
             />
