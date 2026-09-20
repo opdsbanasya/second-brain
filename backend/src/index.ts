@@ -18,9 +18,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 
 
-const helmetFn = helmet as unknown as () => any;
-
-app.use(helmetFn());
+app.use(helmet());
 
 app.set("trust proxy", 1);
 
@@ -75,3 +73,4 @@ const startServer = async () => {
 };
 
 startServer();
+
