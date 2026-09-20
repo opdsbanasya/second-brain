@@ -17,7 +17,10 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-app.use(helmet());
+
+const helmetFn = helmet as unknown as () => any;
+
+app.use(helmetFn());
 
 app.set("trust proxy", 1);
 
