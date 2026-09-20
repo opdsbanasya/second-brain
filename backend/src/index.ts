@@ -17,13 +17,13 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-import * as helmetNs from "helmet";
+// import * as helmetNs from "helmet";
 
-const helmet: typeof helmetNs.default =
-  (helmetNs as unknown as { default?: typeof helmetNs.default }).default ??
-  (helmetNs as unknown as typeof helmetNs.default);
+// const helmet: typeof helmetNs.default =
+//   (helmetNs as unknown as { default?: typeof helmetNs.default }).default ??
+//   (helmetNs as unknown as typeof helmetNs.default);
 
-app.use(helmet());
+// app.use(helmet());
 // app.use(helmet());
 
 app.set("trust proxy", 1);
