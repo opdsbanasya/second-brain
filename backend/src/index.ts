@@ -1,5 +1,6 @@
-import express from "express";
+﻿import * as helmetPkg from "helmet";
 import dotenv from "dotenv";
+import express from "express";
 import connectDB from "./config/dbConfig.js";
 import { authRoute } from "./routes/auth.routes.js";
 import tagRoute from "./routes/tags.route.js";
@@ -9,7 +10,6 @@ import userRoute from "./routes/user.routes.js";
 import cookieParser from "cookie-parser";
 import apiKey from "./routes/apiKeys.route.js";
 import cors from "cors";
-import helmet from "helmet";
 import { apiLimiter, authLimiter } from "./utils/rateLimiter.js";
 
 dotenv.config();
@@ -17,8 +17,7 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-
-app.use(helmet());
+app.use(helmetPkg.default());
 
 app.set("trust proxy", 1);
 
@@ -26,7 +25,7 @@ app.use(cookieParser());
 app.use(express.json({limit: "10mb"}));
 
 // Apply rate limiter to all API routes
-app.use("/api", apiLimiter);  
+app.use("/api", apiLimiter);
 
 const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
 if(!clientUrl){
@@ -52,7 +51,7 @@ app.use("/api/v1/api-key", apiKey);
 // Default route
 app.get("/", (req, res) => {
   try {
-    res.json({ message: "Welcome to the Second Brain 🤯" });
+    res.json({ message: "Welcome to the Second Brain dY_" });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -73,4 +72,3 @@ const startServer = async () => {
 };
 
 startServer();
-
