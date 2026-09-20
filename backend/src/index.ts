@@ -1,4 +1,4 @@
-﻿import * as helmetPkg from "helmet";
+﻿import helmet from "helmet";
 import dotenv from "dotenv";
 import express from "express";
 import connectDB from "./config/dbConfig.js";
@@ -17,7 +17,7 @@ dotenv.config();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-app.use(helmetPkg.default());
+app.use(helmet());
 
 app.set("trust proxy", 1);
 
